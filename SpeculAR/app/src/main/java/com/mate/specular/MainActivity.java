@@ -3,6 +3,8 @@ package com.mate.specular;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.opencv.android.OpenCVLoader;
@@ -30,8 +32,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Example of a call to a native method
-        TextView tv = (TextView) findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
+       // TextView tv = (TextView) findViewById(R.id.sample_text);
+        //tv.setText(stringFromJNI());
+    }
+
+    /*public EditText username =  findViewById(R.id.userLoginEmail);
+    public EditText password = (EditText) findViewById(R.id.userLoginPassword);
+    public void loginButtonAction(View view){
+        Log.i("Info", "Login Button Action method started");
+
+        Log.i("Info", "Username: " + username.getText().toString() + " password: " + password.getText().toString());
+
+        //TODO login servisi icin gerekli islem gelecek
+
+    }*/
+
+    public void signupButtonAction(){
+
     }
 
     /**
