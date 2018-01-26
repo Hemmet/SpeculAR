@@ -32,7 +32,7 @@
         android:singleLine="true" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/loginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/userLoginPassword"
@@ -44,7 +44,7 @@
         android:id="@+id/signUpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/button"
+        android:layout_alignBottom="@+id/loginButton"
         android:layout_alignStart="@+id/userLoginPassword"
         android:text="sign up" />
 </RelativeLayout>

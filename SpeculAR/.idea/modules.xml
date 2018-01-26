@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SpeculAR.iml" filepath="$PROJECT_DIR$/SpeculAR.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\asd\workspaces\ws_android\specular\SpeculAR\app\app.iml" filepath="C:\Users\asd\workspaces\ws_android\specular\SpeculAR\app\app.iml" />
       <module fileurl="file://$PROJECT_DIR$/openCVLibrary340/openCVLibrary340.iml" filepath="$PROJECT_DIR$/openCVLibrary340/openCVLibrary340.iml" />
     </modules>
   </component>
