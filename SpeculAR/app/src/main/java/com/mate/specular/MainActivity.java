@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
 
-        signUpTextButton = (Button) findViewById(R.id.signUpButton);
+        signUpTextButton = (Button) findViewById(R.id.goSignupPageButton);
         username = findViewById(R.id.userLoginEmail);
         pass = (EditText) findViewById(R.id.userLoginPassword);
         loginButton = (Button) findViewById(R.id.loginButton);

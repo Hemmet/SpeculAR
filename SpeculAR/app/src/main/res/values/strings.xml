@@ -5,4 +5,7 @@
     <string name="sign_up_button_label">Sign Up</string>
     <string name="login_error_message">Credentials are wrong!</string>
     <string name="login_error_title">Login Error</string>
+    <string name="already_have_an_acoount">Already have an account?</string>
+    <string name="signup_error_message">Please make sure you enter an email address and password!</string>
+    <string name="signup_error_title">Error!</string>
 </resources>
