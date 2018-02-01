@@ -16,7 +16,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignUpActivity"></activity>
+        <activity android:name=".SignUpActivity" />
+        <activity android:name=".ListPlace" />
+        <activity android:name=".ListAvenue" />
+        <activity android:name=".AddAvenue" />
+        <activity android:name=".AddPlace" />
+        <activity android:name=".Camera"></activity>
     </application>
 
 </manifest>
