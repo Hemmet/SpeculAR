@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:padding="10dp"
+    >
+    <TextView
+        android:paddingTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="ave_name"
+        android:id="@+id/ave_name"
+        android:layout_marginLeft="5dp"
+        />
+
+    /*<TextView
+        android:id="@+id/size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/ave_name"
+        android:layout_alignBottom="@+id/ave_name"
+        android:layout_marginStart="32dp"
+        android:layout_toEndOf="@+id/ave_name"
+        android:paddingTop="10dp"
+        android:text="Size"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+*/
+    <TextView
+        android:id="@+id/type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/ave_name"
+        android:layout_alignBottom="@+id/ave_name"
+        android:layout_marginEnd="40dp"
+        android:layout_toStartOf="@+id/ave_del"
+        android:paddingTop="10dp"
+        android:text="Type"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    <Button
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_alignParentRight="true"
+        android:text="Del"
+        android:id="@+id/ave_del"
+        android:layout_alignBottom="@+id/owner_name"
+        android:layout_alignTop="@+id/ave_name"/>
+
+    <TextView
+        android:id="@+id/owner_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ave_name"
+        android:layout_marginLeft="15dp"
+        android:text="created_by"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</RelativeLayout>
