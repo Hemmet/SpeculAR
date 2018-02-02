@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -20,13 +19,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListPlace extends AppCompatActivity {
+public class PlaceListActivity extends AppCompatActivity {
 
     private RecyclerView placeView;
-    private AdapterPlc placeAdapter;
-    private DatabaseReference plc_list;
+    private PlaceAdapter placeAdapter;
+    private DatabaseReference placeList;
     private String userID;
-    private Button AddPlc;
+    private Button addPlaceButton, logoutButton;
     Bundle extras;
 
 
@@ -35,27 +34,25 @@ public class ListPlace extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_place);
 
-        plc_list = FirebaseDatabase.getInstance().getReference("users/");
+        placeList = FirebaseDatabase.getInstance().getReference("users/");
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         extras = getIntent().getExtras();
 
-        plc_list.child(userID+"/avenues/" + extras.getString("ave_key")+ "/places").addValueEventListener(new ValueEventListener() {
+        placeList.child(userID + "/places").addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<PlaceData> data=new ArrayList<>();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
                     PlaceData plc_inf = new PlaceData();
-
-                    plc_inf.setName(ds.getValue(AvenueData.class).getName());
-
+                    plc_inf.setName(ds.getValue(PlaceData.class).getName());
                     data.add(plc_inf);
                 }
-                placeView = findViewById(R.id.plc_list);
-                placeAdapter = new AdapterPlc(ListPlace.this, data, "users/"+ userID+"/avenues/" + extras.getString("ave_key")+ "/places", extras.getString("ave_key") );
+                placeView = findViewById(R.id.placeListView);
+                placeAdapter = new PlaceAdapter(PlaceListActivity.this, data, "users/" + userID + "/places");
                 placeView.setAdapter(placeAdapter);
-                placeView.setLayoutManager(new LinearLayoutManager(ListPlace.this));
+                placeView.setLayoutManager(new LinearLayoutManager(PlaceListActivity.this));
             }
 
             @Override
@@ -64,12 +61,23 @@ public class ListPlace extends AppCompatActivity {
             }
         });
 
-        AddPlc = findViewById(R.id.add_plc);
-        AddPlc.setOnClickListener(new View.OnClickListener() {
+        addPlaceButton = findViewById(R.id.addPlaceButton);
+        addPlaceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ListPlace.this, AddPlace.class);
-                intent.putExtra("ave_key",extras.getString("ave_key"));
+                Intent intent = new Intent(PlaceListActivity.this, AddPlace.class);
+                startActivity(intent);
+            }
+        });
+
+        logoutButton = findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(PlaceListActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });

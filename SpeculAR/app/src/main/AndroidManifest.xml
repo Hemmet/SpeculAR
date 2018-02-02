@@ -17,11 +17,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".SignUpActivity" />
-        <activity android:name=".ListPlace" />
-        <activity android:name=".ListAvenue" />
-        <activity android:name=".AddAvenue" />
+        <activity android:name=".PlaceListActivity" />
         <activity android:name=".AddPlace" />
-        <activity android:name=".Camera"></activity>
+        <activity android:name=".CameraActivity" />
+        <activity android:name=".LogInActivity"></activity>
     </application>
 
 </manifest>

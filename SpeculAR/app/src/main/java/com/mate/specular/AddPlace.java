@@ -1,12 +1,10 @@
 package com.mate.specular;
 
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EdgeEffect;
 import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,14 +30,8 @@ public class AddPlace extends AppCompatActivity {
         setContentView(R.layout.activity_add_place);
 
         extras = getIntent().getExtras();
-
-        plc_push = FirebaseDatabase.getInstance().getReference("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() +
-               "/avenues/" + extras.getString("ave_key")+ "/places");
-
-        AddPlace = findViewById(R.id.add_plc);
-
-
-
+        plc_push = FirebaseDatabase.getInstance().getReference("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/places");
+        AddPlace = findViewById(R.id.addPlaceButton);
         Name = findViewById(R.id.add_plc_name);
 
         AddPlace.setOnClickListener(new View.OnClickListener() {
@@ -54,7 +46,7 @@ public class AddPlace extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         Map<String, Object> taskMap = new HashMap<>();
-                        taskMap.put("size", snapshot.getValue(AvenueData.class).getSize()+1);
+                        taskMap.put("size", snapshot.getValue(PlaceData.class).getSize()+1);
                         plc_push.getParent().updateChildren(taskMap);
                     }
 
@@ -71,8 +63,9 @@ public class AddPlace extends AppCompatActivity {
                 android.app.AlertDialog dialog = builder.create();
                 dialog.show();
 
-                Intent changeToTaskActivity = new Intent(AddPlace.this, ListPlace.class);
-                changeToTaskActivity.putExtra("ave_key", extras.getString("ave_key"));
+                Intent changeToTaskActivity = new Intent(AddPlace.this, PlaceListActivity.class);
+                changeToTaskActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                changeToTaskActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(changeToTaskActivity);
             }
         });

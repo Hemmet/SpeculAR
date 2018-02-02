@@ -20,8 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-public class AdapterPlc extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class PlaceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context context;
     private LayoutInflater inflater;
@@ -29,14 +28,12 @@ public class AdapterPlc extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private PlaceHolder plcHolder;
     private String url;
     private DatabaseReference plc_del;
-    private String ave_key;
 
-    public AdapterPlc(Context context, List<PlaceData> data, String url, String ave_key) {
+    public PlaceAdapter(Context context, List<PlaceData> data, String url) {
         this.context=context;
         inflater= LayoutInflater.from(context);
         this.data=data;
         this.url = url;
-        this.ave_key = ave_key;
     }
 
     @Override
@@ -45,13 +42,14 @@ public class AdapterPlc extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         plcHolder=new PlaceHolder(view);
         return plcHolder;
     }
+
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         plcHolder = (PlaceHolder) holder;
         PlaceData current=data.get(position);
         plcHolder.plcName.setText(current.getName());
-
     }
+
     @Override
     public int getItemCount() {
         return data.size();
@@ -66,7 +64,7 @@ public class AdapterPlc extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     Map<String, Object> taskMap = new HashMap<>();
-                    taskMap.put("size", snapshot.getValue(AvenueData.class).getSize() - 1);
+                    taskMap.put("size", snapshot.getValue(PlaceData.class).getSize() - 1);
                     plc_del.getParent().updateChildren(taskMap);
                 }
 
@@ -81,35 +79,10 @@ public class AdapterPlc extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             plcName = itemView.findViewById(R.id.plc_name);
             delete = itemView.findViewById(R.id.plc_del);
 
-            /*plcName.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View view) {
-                    String name = data.get(getAdapterPosition()).getName();
-                    FirebaseDatabase.getInstance().getReference(url).orderByChild("name").equalTo(name).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            for (DataSnapshot childSnapshot : dataSnapshot.getChildren()){
-                                Intent changeToTaskActivity = new Intent(context, ListPlace.class);
-                                changeToTaskActivity.putExtra("ave_key", childSnapshot.getKey());
-                                context.startActivity(changeToTaskActivity);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-
-                }
-            });*/
-
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String name = data.get(getAdapterPosition()).getName();
-                    System.out.println(name + " ssssssssssssssssssssssssssssssssssssssssss");
                     plc_del = FirebaseDatabase.getInstance().getReference(url);
 
                     plc_del.orderByChild("name").equalTo(name).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -117,8 +90,9 @@ public class AdapterPlc extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                                 plc_del.child(childSnapshot.getKey()).removeValue();
-                                Intent changeToTaskActivity = new Intent(context, ListPlace.class);
-                                changeToTaskActivity.putExtra("ave_key", ave_key);
+                                Intent changeToTaskActivity = new Intent(context, PlaceListActivity.class);
+                                changeToTaskActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                changeToTaskActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 context.startActivity(changeToTaskActivity);
                             }
                             decrement();
@@ -129,13 +103,8 @@ public class AdapterPlc extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                         }
                     });
-
-
-
                 }
             });
-
-
         }
     }
 }

@@ -7,44 +7,8 @@
     android:layout_height="match_parent"
     tools:context="com.mate.specular.MainActivity">
 
-    <EditText
-        android:id="@+id/userLoginEmail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="160dp"
-        android:ems="10"
-        android:hint="E-mail"
-        android:inputType="textEmailAddress"
-        android:singleLine="true" />
-
-    <EditText
-        android:id="@+id/userLoginPassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/userLoginEmail"
-        android:layout_below="@+id/userLoginEmail"
-        android:layout_marginTop="30dp"
-        android:ems="10"
-        android:hint="Password"
-        android:inputType="textPassword"
-        android:singleLine="true" />
-
-    <Button
-        android:id="@+id/loginButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/userLoginPassword"
-        android:layout_below="@+id/userLoginPassword"
-        android:layout_marginTop="33dp"
-        android:text="logın" />
-
-    <Button
-        android:id="@+id/goSignupPageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/loginButton"
-        android:layout_alignStart="@+id/userLoginPassword"
-        android:text="sign up" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Main Activity" />
 </RelativeLayout>

@@ -3,7 +3,7 @@ package com.mate.specular;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class Camera extends AppCompatActivity {
+public class CameraActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

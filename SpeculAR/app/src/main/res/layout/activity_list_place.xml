@@ -8,21 +8,30 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.mate.specular.ListPlace">
+    tools:context="com.mate.specular.PlaceListActivity"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/placeListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="center|bottom"
         android:orientation="vertical">
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/plc_list"
-            android:layout_width="match_parent"
-            android:layout_height="438dp" />
 
         <Button
-            android:text="ADD PLACE"
+            android:text="Add Place"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/add_plc" />
+            android:id="@+id/addPlaceButton" />
+        <Button
+            android:text="Log Out"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/logoutButton" />
     </LinearLayout>
 
 </RelativeLayout>

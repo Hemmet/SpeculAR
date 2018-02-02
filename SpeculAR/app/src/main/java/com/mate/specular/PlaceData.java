@@ -14,5 +14,11 @@ public class PlaceData {
     }
 
     private String name;
+    private int size;
+
+
+    public int getSize() {
+        return size;
+    }
 
 }

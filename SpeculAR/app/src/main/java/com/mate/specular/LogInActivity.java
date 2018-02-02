@@ -1,8 +1,8 @@
 package com.mate.specular;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,54 +13,69 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-public class SignUpActivity extends AppCompatActivity {
+public class LogInActivity extends AppCompatActivity {
 
-    protected EditText passwordEditText, emailEditText;
-    protected Button signUpButton, goLoginPageButton;
+    private static final String TAG = "LoginActivity";
+    Button signUpTextButton;
+    Button loginButton;
+    protected EditText username;
+    protected EditText pass;
     private FirebaseAuth mFirebaseAuth;
+    private FirebaseUser mFirebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_log_in);
 
-        // Initialize FirebaseAuth
+        // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseUser = mFirebaseAuth.getCurrentUser();
 
-        passwordEditText = (EditText)findViewById(R.id.userSignUpPassword);
-        emailEditText = (EditText)findViewById(R.id.userSignUpEmail);
-        signUpButton = (Button)findViewById(R.id.signUpButton);
-        goLoginPageButton = (Button)findViewById(R.id.goLoginPageButton);
+        signUpTextButton = (Button) findViewById(R.id.goSignupPageButton);
+        username = findViewById(R.id.userLoginEmail);
+        pass = (EditText) findViewById(R.id.userLoginPassword);
+        loginButton = (Button) findViewById(R.id.loginButton);
 
-        signUpButton.setOnClickListener(new View.OnClickListener() {
+        signUpTextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String password = passwordEditText.getText().toString();
-                String email = emailEditText.getText().toString();
+                Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
+                startActivity(intent);
+            }
+        });
 
-                password = password.trim();
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String email = username.getText().toString();
+                String password = pass.getText().toString();
+
                 email = email.trim();
+                password = password.trim();
 
-                if (password.isEmpty() || email.isEmpty()) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-                    builder.setMessage(R.string.signup_error_message)
-                            .setTitle(R.string.signup_error_title)
+                if (email.isEmpty() || password.isEmpty()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(LogInActivity.this);
+                    builder.setMessage(R.string.login_error_message)
+                            .setTitle(R.string.login_error_title)
                             .setPositiveButton(android.R.string.ok, null);
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 } else {
-                    mFirebaseAuth.createUserWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
+                    mFirebaseAuth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(LogInActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                                        Intent intent = new Intent(LogInActivity.this, PlaceListActivity.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intent);
                                     } else {
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(LogInActivity.this);
                                         builder.setMessage(task.getException().getMessage())
                                                 .setTitle(R.string.login_error_title)
                                                 .setPositiveButton(android.R.string.ok, null);
@@ -72,17 +87,5 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             }
         });
-
-        goLoginPageButton = (Button) findViewById(R.id.goLoginPageButton);
-
-        goLoginPageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
     }
-
 }
