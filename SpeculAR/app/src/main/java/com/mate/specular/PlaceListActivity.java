@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mate.specular.model.Place;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +44,10 @@ public class PlaceListActivity extends AppCompatActivity {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<PlaceData> data=new ArrayList<>();
+                List<Place> data=new ArrayList<>();
                 for(DataSnapshot ds: dataSnapshot.getChildren()){
-                    PlaceData plc_inf = new PlaceData();
-                    plc_inf.setName(ds.getValue(PlaceData.class).getName());
+                    Place plc_inf = new Place();
+                    plc_inf.setName(ds.getValue(Place.class).getName());
                     data.add(plc_inf);
                 }
                 placeView = findViewById(R.id.placeListView);

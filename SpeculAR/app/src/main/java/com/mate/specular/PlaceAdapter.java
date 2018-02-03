@@ -14,6 +14,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mate.specular.model.Place;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,12 +25,12 @@ public class PlaceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private Context context;
     private LayoutInflater inflater;
-    private List<PlaceData> data= Collections.emptyList();
+    private List<Place> data= Collections.emptyList();
     private PlaceHolder plcHolder;
     private String url;
     private DatabaseReference plc_del;
 
-    public PlaceAdapter(Context context, List<PlaceData> data, String url) {
+    public PlaceAdapter(Context context, List<Place> data, String url) {
         this.context=context;
         inflater= LayoutInflater.from(context);
         this.data=data;
@@ -46,7 +47,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         plcHolder = (PlaceHolder) holder;
-        PlaceData current=data.get(position);
+        Place current=data.get(position);
         plcHolder.plcName.setText(current.getName());
     }
 
@@ -64,7 +65,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     Map<String, Object> taskMap = new HashMap<>();
-                    taskMap.put("size", snapshot.getValue(PlaceData.class).getSize() - 1);
+                    taskMap.put("size", snapshot.getValue(Place.class).getSize() - 1);
                     plc_del.getParent().updateChildren(taskMap);
                 }
 

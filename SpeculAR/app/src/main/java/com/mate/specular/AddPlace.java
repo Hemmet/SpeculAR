@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mate.specular.model.Place;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class AddPlace extends AppCompatActivity {
         AddPlace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PlaceData plc = new PlaceData();
+                Place plc = new Place();
                 plc.setName(Name.getText().toString());
 
                 plc_push.push().setValue(plc);
@@ -46,7 +47,7 @@ public class AddPlace extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         Map<String, Object> taskMap = new HashMap<>();
-                        taskMap.put("size", snapshot.getValue(PlaceData.class).getSize()+1);
+                        taskMap.put("size", snapshot.getValue(Place.class).getSize()+1);
                         plc_push.getParent().updateChildren(taskMap);
                     }
 
