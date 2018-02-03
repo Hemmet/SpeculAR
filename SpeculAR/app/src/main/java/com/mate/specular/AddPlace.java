@@ -47,7 +47,7 @@ public class AddPlace extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
                         Map<String, Object> taskMap = new HashMap<>();
-                        taskMap.put("size", snapshot.getValue(Place.class).getSize()+1);
+                        taskMap.put("size", snapshot.getValue(Place.class).getFrames().size()+1);
                         plc_push.getParent().updateChildren(taskMap);
                     }
 
