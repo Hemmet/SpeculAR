@@ -65,7 +65,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     Map<String, Object> taskMap = new HashMap<>();
-                    taskMap.put("size", snapshot.getValue(Place.class).getSize() - 1);
+                    //taskMap.put("size", snapshot.getValue(Place.class).getSize() - 1);
                     plc_del.getParent().updateChildren(taskMap);
                 }
 
