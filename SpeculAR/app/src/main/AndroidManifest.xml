@@ -12,15 +12,25 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".PlaceListActivity" />
         <activity android:name=".AddPlace" />
-        <activity android:name=".CameraActivity" />
-        <activity android:name=".LogInActivity"></activity>
+        <activity android:name=".CameraActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:screenOrientation="landscape" />
+        <activity android:name=".LogInActivity" />
     </application>
+
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
 
 </manifest>
