@@ -12,19 +12,23 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2{
 
     private static final String TAG = "CameraActivity";
     private CameraBridgeViewBase mOpenCvCameraView;
-
+    public static final Map<String, List<Integer>> colorHueCodes = new HashMap<String, List<Integer>>();
+    //TODO hashmap initialize edilecek
 
     static {
         if (!OpenCVLoader.initDebug())
@@ -68,6 +72,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+
     }
 
     @Override
@@ -102,13 +107,13 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
     @Override
     public void onCameraViewStopped() {
-
+        
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat image = inputFrame.rgba();
-        Mat retMat = detectColor(image, "");
+        Mat retMat = detectColor(image, "B");
 
         return retMat;
     }
@@ -125,16 +130,16 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         return shiftedH;
     }
 
-    public Mat thresholdHue(Mat hsvImage, int hueVal, int range, int minSat, int minValue){
+    public Mat thresholdHue(Mat hsvImage, int hueValMin, int hueValMax, int minSat, int minValue){
         Log.i(TAG, "thresholdHue");
         Mat mask = new Mat();
         List<Mat> channels = new ArrayList<Mat>();
 
         Core.split(hsvImage, channels);
 
-        int targetHueVal = 180 / 2;
+        /*int targetHueVal = hueVal / 2;
         int shift = targetHueVal - hueVal;
-        if (shift < 0) shift += 180;
+        if (shift < 0) shift += 180;*/
 
         Mat shiftedHue = channels.get(0);//shiftChannel(channels.get(0), shift, 180);
 
@@ -146,7 +151,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Core.merge(newChannels, shiftedHSV);
 
         // threshold
-        Core.inRange(shiftedHSV, new Scalar(targetHueVal - range, minSat, minValue), new Scalar(targetHueVal + range, 255, 255), mask);
+        Core.inRange(shiftedHSV, new Scalar(hueValMin, minSat, minValue), new Scalar(hueValMax, 255, 255), mask);
+        //Core.inRange(shiftedHSV, new Scalar(targetHueVal - range, minSat, minValue), new Scalar(targetHueVal + range, 255, 255), mask);
 
         return mask;
     }
@@ -157,9 +163,71 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Mat hsvImage = new Mat();
         Imgproc.blur(image, image, new Size(3,3));
         Imgproc.cvtColor(image, hsvImage, Imgproc.COLOR_RGB2HSV);
+        Mat mask = new Mat();
 
-        Mat redMask =  thresholdHue(hsvImage,0,20,50,50); // renkler icin degerler bu
+        if(color.equalsIgnoreCase("R")){ //Red filtering
+            mask =  thresholdHue(hsvImage,0,15,100,100);
+            //return mask;
+            Mat kernel = new Mat();
+            kernel = Imgproc.getStructuringElement(Imgproc.CV_HOUGH_STANDARD, new Size(50,50));
+            Mat dilateMat = new Mat();
+            Imgproc.dilate(mask, dilateMat, kernel);
+            List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+            Imgproc.findContours(dilateMat, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+            System.out.println(contours.size());
+            for(int i = 0; i < contours.size(); i++) {
+                Imgproc.drawContours(image, contours, -1, new Scalar(0, 0, 0), 2); //draw contour
+            }
+            return image;
+        }
+        else if(color.equalsIgnoreCase("G")){ //Green
+            mask =  thresholdHue(hsvImage,40,80,100,100);
+            Mat kernel = new Mat();
+            kernel = Imgproc.getStructuringElement(Imgproc.CV_HOUGH_STANDARD, new Size(50,50));
+            Mat dilateMat = new Mat();
+            Imgproc.dilate(mask, dilateMat, kernel);
+            List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+            Imgproc.findContours(dilateMat, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+            System.out.println(contours.size());
+            for(int i = 0; i < contours.size(); i++) {
+                Imgproc.drawContours(image, contours, -1, new Scalar(0, 0, 0), 2); //draw contour
+            }
+            return image;
+        }
+        else if(color.equalsIgnoreCase("B")){ //Blue
+            mask =  thresholdHue(hsvImage,80,120,150,0);
+            Mat kernel = new Mat();
+            kernel = Imgproc.getStructuringElement(Imgproc.CV_HOUGH_STANDARD, new Size(50,50));
+            Mat dilateMat = new Mat();
+            Imgproc.dilate(mask, dilateMat, kernel);
+            List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+            Imgproc.findContours(dilateMat, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+            System.out.println(contours.size());
+            for(int i = 0; i < contours.size(); i++) {
+                Imgproc.drawContours(image, contours, -1, new Scalar(0, 0, 0), 2); //draw contour
+            }
+            return image;
+        }
+        else if(color.equalsIgnoreCase("Y")){ //Yellow
+            mask =  thresholdHue(hsvImage,20,30,100,100);
+            Mat kernel = new Mat();
+            kernel = Imgproc.getStructuringElement(Imgproc.CV_HOUGH_STANDARD, new Size(50,50));
+            Mat dilateMat = new Mat();
+            Imgproc.dilate(mask, dilateMat, kernel);
+            List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+            Imgproc.findContours(dilateMat, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+            System.out.println(contours.size());
+            for(int i = 0; i < contours.size(); i++) {
+                Imgproc.drawContours(image, contours, -1, new Scalar(0, 0, 0), 2); //draw contour
+            }
+            return image;
+        }
+        return mask;
+    }
 
-        return redMask;
+    public List detectCircles(){
+        List<MatOfPoint> circleList = new ArrayList<MatOfPoint>();
+
+        return circleList;
     }
 }
