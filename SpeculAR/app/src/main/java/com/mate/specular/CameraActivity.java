@@ -11,8 +11,11 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -107,17 +110,15 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
     @Override
     public void onCameraViewStopped() {
-        
+
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat image = inputFrame.rgba();
         Mat retMat = detectColor(image, "B");
-
         return retMat;
     }
-
 
     private static Mat shiftChannel(Mat H, int shift, int maxVal){
         Log.i(TAG, "shiftChannel");
@@ -126,108 +127,127 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             for (int i = 0; i < shiftedH.cols(); ++i){
                 shiftedH.put(j, i,(shiftedH.get(j,i)[0] + shift) % maxVal);
             }
-
         return shiftedH;
     }
 
     public Mat thresholdHue(Mat hsvImage, int hueValMin, int hueValMax, int minSat, int minValue){
-        Log.i(TAG, "thresholdHue");
         Mat mask = new Mat();
-        List<Mat> channels = new ArrayList<Mat>();
-
-        Core.split(hsvImage, channels);
-
-        /*int targetHueVal = hueVal / 2;
-        int shift = targetHueVal - hueVal;
-        if (shift < 0) shift += 180;*/
-
-        Mat shiftedHue = channels.get(0);//shiftChannel(channels.get(0), shift, 180);
-
-        List<Mat> newChannels = new ArrayList<Mat>();
-        newChannels.add(shiftedHue);
-        newChannels.add(channels.get(1));
-        newChannels.add(channels.get(2));
-        Mat shiftedHSV = new Mat();
-        Core.merge(newChannels, shiftedHSV);
-
-        // threshold
-        Core.inRange(shiftedHSV, new Scalar(hueValMin, minSat, minValue), new Scalar(hueValMax, 255, 255), mask);
-        //Core.inRange(shiftedHSV, new Scalar(targetHueVal - range, minSat, minValue), new Scalar(targetHueVal + range, 255, 255), mask);
-
+        Core.inRange(hsvImage, new Scalar(hueValMin, minSat, minValue), new Scalar(hueValMax, 255, 255), mask);
         return mask;
     }
 
+    public static List<Circle> hsvColorDetect(Mat mask, Mat image){
+        List<Circle> circles = new ArrayList<Circle>();
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Imgproc.findContours(mask, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        System.out.println(contours.size());
+        //Imgproc.drawContours(image, contours, -1, new Scalar(0, 0, 0), 4); //draw contour
+        for(int i = 0; i < contours.size(); i++){
+            Circle temp = new Circle(0,0,0);
+            float[] radius = new float[1];
+            Point center = new Point();
+            Imgproc.minEnclosingCircle(new MatOfPoint2f(contours.get(i).toArray()), center, radius);
+            if(Math.round(radius[0]) > 5) {
+                //Imgproc.circle(image, center, Math.round(radius[0]), new Scalar(255, 255, 255));
+                temp.x  = (int) center.x;
+                temp.y = (int) center.y;
+                temp.radius = Math.round(radius[0]);
+                circles.add(temp);
+                //Imgproc.drawContours(image, contours, -1, new Scalar(255, 0, 0), 2); //draw contour
+            }
+        }
+        return circles;
+    }
+
     public Mat detectColor(Mat image, String color){ //resimi ve detect edilecek color i string olarak alio simdilik
-        //TODO renge gore HUE degerlerini olustur bi yerden cekiver.
-        Log.i(TAG, "detectColor");
+        //Log.i(TAG, "detectColor");
         Mat hsvImage = new Mat();
-        Imgproc.blur(image, image, new Size(3,3));
+        Imgproc.GaussianBlur(image, image, new Size(3,3), 2, 2);
         Imgproc.cvtColor(image, hsvImage, Imgproc.COLOR_RGB2HSV);
-        Mat mask = new Mat();
+        Mat mask =  new Mat();
+        List<Circle> houghCircleList = houghTransformCircle(image);
 
         if(color.equalsIgnoreCase("R")){ //Red filtering
-            mask =  thresholdHue(hsvImage,0,15,100,100);
-            //return mask;
-            Mat kernel = new Mat();
-            kernel = Imgproc.getStructuringElement(Imgproc.CV_HOUGH_STANDARD, new Size(50,50));
-            Mat dilateMat = new Mat();
-            Imgproc.dilate(mask, dilateMat, kernel);
-            List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-            Imgproc.findContours(dilateMat, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-            System.out.println(contours.size());
-            for(int i = 0; i < contours.size(); i++) {
-                Imgproc.drawContours(image, contours, -1, new Scalar(0, 0, 0), 2); //draw contour
-            }
+            mask = thresholdHue(hsvImage,160,179,100,100);
+            List<Circle> hsvCircles = hsvColorDetect(mask, image);
+            Circle redC = new Circle(0,0,0);
+            redC = findMatchCircle(hsvCircles, houghCircleList);
+            Point center = new Point(redC.x, redC.y);
+            Imgproc.circle(image, center, redC.radius, new Scalar(127, 255, 212), 3);
             return image;
+
         }
         else if(color.equalsIgnoreCase("G")){ //Green
             mask =  thresholdHue(hsvImage,40,80,100,100);
-            Mat kernel = new Mat();
-            kernel = Imgproc.getStructuringElement(Imgproc.CV_HOUGH_STANDARD, new Size(50,50));
-            Mat dilateMat = new Mat();
-            Imgproc.dilate(mask, dilateMat, kernel);
-            List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-            Imgproc.findContours(dilateMat, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-            System.out.println(contours.size());
-            for(int i = 0; i < contours.size(); i++) {
-                Imgproc.drawContours(image, contours, -1, new Scalar(0, 0, 0), 2); //draw contour
-            }
+            List<Circle> hsvCircles = hsvColorDetect(mask, image);
+            Circle greenC = new Circle(0,0,0);
+            greenC = findMatchCircle(hsvCircles, houghCircleList);
+            Point center = new Point(greenC.x, greenC.y);
+            Imgproc.circle(image, center, greenC.radius, new Scalar(127, 255, 212), 3);
+
             return image;
         }
         else if(color.equalsIgnoreCase("B")){ //Blue
             mask =  thresholdHue(hsvImage,80,120,150,0);
-            Mat kernel = new Mat();
-            kernel = Imgproc.getStructuringElement(Imgproc.CV_HOUGH_STANDARD, new Size(50,50));
-            Mat dilateMat = new Mat();
-            Imgproc.dilate(mask, dilateMat, kernel);
-            List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-            Imgproc.findContours(dilateMat, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-            System.out.println(contours.size());
-            for(int i = 0; i < contours.size(); i++) {
-                Imgproc.drawContours(image, contours, -1, new Scalar(0, 0, 0), 2); //draw contour
-            }
+            List<Circle> hsvCircles = hsvColorDetect(mask, image);
+            Circle blueC = new Circle(0,0,0);
+            blueC = findMatchCircle(hsvCircles, houghCircleList);
+            Point center = new Point(blueC.x, blueC.y);
+            Imgproc.circle(image, center, blueC.radius, new Scalar(127, 255, 212), 3);
+
             return image;
         }
         else if(color.equalsIgnoreCase("Y")){ //Yellow
             mask =  thresholdHue(hsvImage,20,30,100,100);
-            Mat kernel = new Mat();
-            kernel = Imgproc.getStructuringElement(Imgproc.CV_HOUGH_STANDARD, new Size(50,50));
-            Mat dilateMat = new Mat();
-            Imgproc.dilate(mask, dilateMat, kernel);
-            List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-            Imgproc.findContours(dilateMat, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-            System.out.println(contours.size());
-            for(int i = 0; i < contours.size(); i++) {
-                Imgproc.drawContours(image, contours, -1, new Scalar(0, 0, 0), 2); //draw contour
-            }
+            List<Circle> hsvCircles = hsvColorDetect(mask, image);
+            Circle yellowC = new Circle(0,0,0);
+            yellowC = findMatchCircle(hsvCircles, houghCircleList);
+            Point center = new Point(yellowC.x, yellowC.y);
+            Imgproc.circle(image, center, yellowC.radius, new Scalar(127, 255, 212), 3);
+
             return image;
         }
         return mask;
     }
 
-    public List detectCircles(){
-        List<MatOfPoint> circleList = new ArrayList<MatOfPoint>();
+    public static List<Circle> houghTransformCircle(Mat image){
+        List<Circle> houghPointList = new ArrayList<Circle>();
+        Mat circles = new Mat();
+        Mat tempMat = new Mat();
+        Imgproc.cvtColor(image, tempMat, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.HoughCircles(tempMat,circles,Imgproc.CV_HOUGH_GRADIENT,2,150,200,100,0,0);
 
-        return circleList;
+        for (int x = 0; x < circles.cols(); x++) {
+            Circle temp = new Circle(0,0,0);
+            double[] c = circles.get(0, x);
+            Point center = new Point(Math.round(c[0]), Math.round(c[1]));
+            // circle center
+            Imgproc.circle(image, center, 1, new Scalar(0,100,100), 3, 8, 0 );
+            // circle outline
+            int radius = (int) Math.round(c[2]);
+            //Imgproc.circle(image, center, radius, new Scalar(255,0,255), 3, 8, 0 );
+            temp.x = (int) Math.round(c[0]);
+            temp.y = (int) Math.round(c[1]);
+            temp.radius = (int) Math.round(c[2]);
+            houghPointList.add(temp);
+        }
+        return houghPointList;
     }
+
+    public static Circle findMatchCircle(List<Circle> hsvCircles, List<Circle> hCircles){
+        int tolerance = 10;
+        int toleranceRadius = 5;
+        Circle matchedCircle = new Circle(0,0,0);
+        for (Circle hofCircle : hCircles){
+            for(Circle hsvCir : hsvCircles){
+                if((hsvCir.x - tolerance) < hofCircle.x && hofCircle.x < (hsvCir.x + tolerance)  && (hsvCir.y - tolerance) < hofCircle.y && hofCircle.y < (hsvCir.y + tolerance) && (hsvCir.radius - toleranceRadius) < hofCircle.radius && hofCircle.radius < (hsvCir.radius + toleranceRadius)){
+                    matchedCircle.x = hsvCir.x;
+                    matchedCircle.y = hsvCir.y;
+                    matchedCircle.radius = hsvCir.radius;
+                }
+            }
+        }
+        return matchedCircle;
+    }
+
 }
