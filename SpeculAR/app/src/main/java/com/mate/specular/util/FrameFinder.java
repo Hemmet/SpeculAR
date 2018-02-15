@@ -27,7 +27,7 @@ public class FrameFinder {
         List<Frame> frames = new ArrayList<>();
 
         for(String id : frameIDs.keySet()){
-            frames.add(new Frame()//curl 'https://specular-bymate.firebaseio.com/frames/'+id');
+            frames.add(new Frame());//curl 'https://specular-bymate.firebaseio.com/frames/'+id');
         }
 
         for (Frame frame: frames) {
