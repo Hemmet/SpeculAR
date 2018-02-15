@@ -1,6 +1,11 @@
 package com.mate.specular;
 
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -11,7 +16,6 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
@@ -26,12 +30,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2{
+public class CameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener {
 
     private static final String TAG = "CameraActivity";
     private CameraBridgeViewBase mOpenCvCameraView;
-    public static final Map<String, List<Integer>> colorHueCodes = new HashMap<String, List<Integer>>();
-    //TODO hashmap initialize edilecek
+    public static Map<String, List<Integer>> colorHueCodes = new HashMap<String, List<Integer>>();
+    public static Map<String, Circle> circleCoordinates = new HashMap<String, Circle>();
+    public static int screenOrien = 0; // o sa dik 1 se sol 2 ise saga yatmis oluo baby
+
+    //sensor icin degiskenler
+    private SensorManager sensorManager;
+    private float[] lastMagFields = new float[3];;
+    private float[] lastAccels = new float[3];
+    private float[] rotationMatrix = new float[16];
+    private float[] orientation = new float[4];
 
     static {
         if (!OpenCVLoader.initDebug())
@@ -68,13 +80,15 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_camera);
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+        initializColorHashMap(colorHueCodes);
+
+        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 
     }
 
@@ -83,6 +97,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         super.onPause();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
+        sensorManager.unregisterListener(this);
+
     }
 
     @Override
@@ -95,6 +111,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             Log.d(TAG, "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void onDestroy() {
@@ -116,8 +134,134 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat image = inputFrame.rgba();
-        Mat retMat = detectColor(image, "B");
+        Mat retMat = detectColor(image);
+        String pointOrders = pointOrder();
         return retMat;
+    }
+
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    public void onSensorChanged(SensorEvent event) {
+        switch (event.sensor.getType()) {
+            case Sensor.TYPE_ACCELEROMETER:
+                System.arraycopy(event.values, 0, lastAccels, 0, 3);
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                System.arraycopy(event.values, 0, lastMagFields, 0, 3);
+                break;
+            default:
+                return;
+        }
+
+        if (SensorManager.getRotationMatrix(rotationMatrix, null, lastAccels, lastMagFields)) {
+            SensorManager.getOrientation(rotationMatrix, orientation);
+
+            float xAxis = (float) Math.toDegrees(orientation[1]);
+            float yAxis = (float) Math.toDegrees(orientation[2]);
+
+            int orientation = Configuration.ORIENTATION_UNDEFINED;
+            if ((yAxis <= 25) && (yAxis >= -25) && (xAxis >= -160)) {
+                screenOrien = 0;
+                orientation = Configuration.ORIENTATION_PORTRAIT;
+            } else if ((yAxis < -25) && (xAxis >= -20)) {
+                screenOrien = 1;
+                orientation = Configuration.ORIENTATION_LANDSCAPE;
+            } else if ((yAxis > 25) && (xAxis >= -20)){
+                screenOrien = 2;
+                orientation = Configuration.ORIENTATION_LANDSCAPE;
+            }
+        }
+    }
+
+    public static String pointOrder(){
+        if(screenOrien == -1)
+            return null;
+        String order = "";
+        int meanX = 0, meanY = 0;
+        Map<String, String> orders = new HashMap<String, String>();
+        if(screenOrien == 0){
+            for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
+                if(circle.getValue().x == 0 || circle.getValue().y == 0){// 4 noktayi da ayni anda bulamazsa
+                    return null;
+                }
+                meanX = meanX + circle.getValue().x;
+                meanY = meanY + circle.getValue().y;
+            }
+            meanX = meanX / 4;
+            meanY = meanY / 4;
+            for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
+                if(circle.getValue().x < meanX && circle.getValue().y > meanY){// sol ust
+                    orders.put("1", circle.getKey());
+                }
+                else if(circle.getValue().x < meanX && circle.getValue().y < meanY){ //sag ust
+                    orders.put("2", circle.getKey());
+                }
+                else if(circle.getValue().x > meanX && circle.getValue().y < meanY){// sag alt
+                    orders.put("3", circle.getKey());
+                }
+                else if(circle.getValue().x > meanX && circle.getValue().y > meanY){// sol alt
+                    orders.put("4", circle.getKey());
+                }
+            }
+            order = orders.get("1") + orders.get("2") + orders.get("3") + orders.get("4");
+            return order;
+        }
+        else if(screenOrien == 1){
+            for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
+                if(circle.getValue().x == 0 || circle.getValue().y == 0){// 4 noktayi da ayni anda bulamazsa
+                    return null;
+                }
+                meanX = meanX + circle.getValue().x;
+                meanY = meanY + circle.getValue().y;
+            }
+            meanX = meanX / 4;
+            meanY = meanY / 4;
+            for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
+                if(circle.getValue().x < meanX && circle.getValue().y < meanY){// sol ust
+                    orders.put("1", circle.getKey());
+                }
+                else if(circle.getValue().x > meanX && circle.getValue().y < meanY){// sag ust
+                    orders.put("2", circle.getKey());
+                }
+                else if(circle.getValue().x > meanX && circle.getValue().y > meanY){// sag alt
+                    orders.put("3", circle.getKey());
+                }
+                else if(circle.getValue().x < meanX && circle.getValue().y > meanY){// sol alt
+                    orders.put("4", circle.getKey());
+                }
+            }
+            order = orders.get("1") + orders.get("2") + orders.get("3") + orders.get("4");
+            return order;
+        }
+        else if(screenOrien == 2){
+            for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
+                if(circle.getValue().x == 0 || circle.getValue().y == 0){// 4 noktayi da ayni anda bulamazsa
+                    return null;
+                }
+                meanX = meanX + circle.getValue().x;
+                meanY = meanY + circle.getValue().y;
+            }
+            meanX = meanX / 4;
+            meanY = meanY / 4;
+            for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
+                if(circle.getValue().x > meanX && circle.getValue().y > meanY){// sol ust
+                    orders.put("1", circle.getKey());
+                }
+                else if(circle.getValue().x < meanX && circle.getValue().y > meanY){// sag ust
+                    orders.put("2", circle.getKey());
+                }
+                else if(circle.getValue().x < meanX && circle.getValue().y < meanY){// sag alt
+                    orders.put("3", circle.getKey());
+                }
+                else if(circle.getValue().x > meanX && circle.getValue().y < meanY){// sol alt
+                    orders.put("4", circle.getKey());
+                }
+            }
+            order = orders.get("1") + orders.get("2") + orders.get("3") + orders.get("4");
+            return order;
+        }
+        return null;
     }
 
     private static Mat shiftChannel(Mat H, int shift, int maxVal){
@@ -136,7 +280,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         return mask;
     }
 
-    public static List<Circle> hsvColorDetect(Mat mask, Mat image){
+    public static List<Circle> hsvColorCircleDetect(Mat mask, Mat image){
         List<Circle> circles = new ArrayList<Circle>();
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Imgproc.findContours(mask, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
@@ -159,7 +303,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         return circles;
     }
 
-    public Mat detectColor(Mat image, String color){ //resimi ve detect edilecek color i string olarak alio simdilik
+    public Mat detectColor(Mat image){
         //Log.i(TAG, "detectColor");
         Mat hsvImage = new Mat();
         Imgproc.GaussianBlur(image, image, new Size(3,3), 2, 2);
@@ -167,47 +311,19 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Mat mask =  new Mat();
         List<Circle> houghCircleList = houghTransformCircle(image);
 
-        if(color.equalsIgnoreCase("R")){ //Red filtering
-            mask = thresholdHue(hsvImage,160,179,100,100);
-            List<Circle> hsvCircles = hsvColorDetect(mask, image);
-            Circle redC = new Circle(0,0,0);
-            redC = findMatchCircle(hsvCircles, houghCircleList);
-            Point center = new Point(redC.x, redC.y);
-            Imgproc.circle(image, center, redC.radius, new Scalar(127, 255, 212), 3);
-            return image;
-
+        for(Map.Entry<String, List<Integer>> hValue : colorHueCodes.entrySet()){
+            String colorCode = hValue.getKey();
+            List<Integer> thresholdValues = hValue.getValue();
+            mask = thresholdHue(hsvImage, thresholdValues.get(0), thresholdValues.get(1), thresholdValues.get(2), thresholdValues.get(3));
+            List<Circle> hsvCircles = hsvColorCircleDetect(mask, image);
+            Circle tempC = new Circle(0,0,0);
+            tempC = findMatchCircle(hsvCircles, houghCircleList);
+            circleCoordinates.put(colorCode, tempC);
+            //debug amacli ekrana basarken kullanilio
+            Point center = new Point(tempC.x, tempC.y);
+            Imgproc.circle(image, center, tempC.radius, new Scalar(127, 255, 212), 3);
         }
-        else if(color.equalsIgnoreCase("G")){ //Green
-            mask =  thresholdHue(hsvImage,40,80,100,100);
-            List<Circle> hsvCircles = hsvColorDetect(mask, image);
-            Circle greenC = new Circle(0,0,0);
-            greenC = findMatchCircle(hsvCircles, houghCircleList);
-            Point center = new Point(greenC.x, greenC.y);
-            Imgproc.circle(image, center, greenC.radius, new Scalar(127, 255, 212), 3);
-
-            return image;
-        }
-        else if(color.equalsIgnoreCase("B")){ //Blue
-            mask =  thresholdHue(hsvImage,80,120,150,0);
-            List<Circle> hsvCircles = hsvColorDetect(mask, image);
-            Circle blueC = new Circle(0,0,0);
-            blueC = findMatchCircle(hsvCircles, houghCircleList);
-            Point center = new Point(blueC.x, blueC.y);
-            Imgproc.circle(image, center, blueC.radius, new Scalar(127, 255, 212), 3);
-
-            return image;
-        }
-        else if(color.equalsIgnoreCase("Y")){ //Yellow
-            mask =  thresholdHue(hsvImage,20,30,100,100);
-            List<Circle> hsvCircles = hsvColorDetect(mask, image);
-            Circle yellowC = new Circle(0,0,0);
-            yellowC = findMatchCircle(hsvCircles, houghCircleList);
-            Point center = new Point(yellowC.x, yellowC.y);
-            Imgproc.circle(image, center, yellowC.radius, new Scalar(127, 255, 212), 3);
-
-            return image;
-        }
-        return mask;
+        return image;
     }
 
     public static List<Circle> houghTransformCircle(Mat image){
@@ -222,9 +338,9 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             double[] c = circles.get(0, x);
             Point center = new Point(Math.round(c[0]), Math.round(c[1]));
             // circle center
-            Imgproc.circle(image, center, 1, new Scalar(0,100,100), 3, 8, 0 );
+            //Imgproc.circle(image, center, 1, new Scalar(0,100,100), 3, 8, 0 );
             // circle outline
-            int radius = (int) Math.round(c[2]);
+            //int radius = (int) Math.round(c[2]);
             //Imgproc.circle(image, center, radius, new Scalar(255,0,255), 3, 8, 0 );
             temp.x = (int) Math.round(c[0]);
             temp.y = (int) Math.round(c[1]);
@@ -235,8 +351,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     }
 
     public static Circle findMatchCircle(List<Circle> hsvCircles, List<Circle> hCircles){
-        int tolerance = 10;
-        int toleranceRadius = 5;
+        int tolerance = 15;
+        int toleranceRadius = 10;
         Circle matchedCircle = new Circle(0,0,0);
         for (Circle hofCircle : hCircles){
             for(Circle hsvCir : hsvCircles){
@@ -250,4 +366,33 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         return matchedCircle;
     }
 
+    public static void initializColorHashMap(Map<String, List<Integer>> colorHueCodes){
+        List<Integer> red = new ArrayList<Integer>();
+        red.add(160); //min H value
+        red.add(179); //max H value
+        red.add(40); // sat value
+        red.add(70); //min sat value
+        colorHueCodes.put("R", red);
+
+        List<Integer> green = new ArrayList<Integer>();
+        green.add(40);
+        green.add(80);
+        green.add(40);
+        green.add(70);
+        colorHueCodes.put("G", green);
+
+        List<Integer> blue = new ArrayList<Integer>();
+        blue.add(80);
+        blue.add(120);
+        blue.add(150);
+        blue.add(0);
+        colorHueCodes.put("B", blue);
+
+        List<Integer> yellow = new ArrayList<Integer>();
+        yellow.add(20);
+        yellow.add(30);
+        yellow.add(100);
+        yellow.add(100);
+        colorHueCodes.put("Y", yellow);
+    }
 }
