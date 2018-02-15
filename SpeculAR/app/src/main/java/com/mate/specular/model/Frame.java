@@ -6,20 +6,20 @@ import java.util.List;
 
 public class Frame {
     private List<Object> objects;
-    private Point[] points = new Point[4];
+    private Circle[] circles = new Circle[4];
 
     /**
      * Creates Frame object with given
      *
      * @param  objects list of objects that are inside the frame
-     * @param  points array of points with size of 4 ,
+     * @param  circles array of circles with size of 4 ,
      *                that are located at top-left, top-right, bottom-left, bottom-right of the frame
      * @see         Object
-     * @see         Point
+     * @see         Circle
      */
-    public Frame(List<Object> objects, Point[] points) {
+    public Frame(List<Object> objects, Circle[] circles) {
         this.objects = objects;
-        this.points = points;
+        this.circles = circles;
     }
 
     /**
@@ -47,21 +47,21 @@ public class Frame {
     }
 
     /**
-     * @retun  points array of points with size of 4 ,
+     * @retun  circles array of circles with size of 4 ,
      *                that are located at top-left, top-right, bottom-left, bottom-right of the frame
-     * @see         Point
+     * @see         Circle
      */
-    public Point[] getPoints() {
-        return points;
+    public Circle[] getCircles() {
+        return circles;
     }
 
     /**
      * Sets
-     * @param  points array of points with size of 4 ,
+     * @param  circles array of circles with size of 4 ,
      *                that are located at top-left, top-right, bottom-left, bottom-right of the frame
-     * @see         Point
+     * @see         Circle
      */
-    public void setPoints(Point[] points) {
-        this.points = points;
+    public void setCircles(Circle[] circles) {
+        this.circles = circles;
     }
 }

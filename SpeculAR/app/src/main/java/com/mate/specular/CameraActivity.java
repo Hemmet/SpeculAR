@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
+import com.mate.specular.model.Circle;
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
@@ -178,29 +180,29 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         if(screenOrien == -1)
             return null;
         String order = "";
-        int meanX = 0, meanY = 0;
+        int meanX = 0, meanY = 0; //should be double
         Map<String, String> orders = new HashMap<String, String>();
         if(screenOrien == 0){
             for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
-                if(circle.getValue().x == 0 || circle.getValue().y == 0){// 4 noktayi da ayni anda bulamazsa
+                if(circle.getValue().getX_coord() == 0 || circle.getValue().getY_coord() == 0){// 4 noktayi da ayni anda bulamazsa
                     return null;
                 }
-                meanX = meanX + circle.getValue().x;
-                meanY = meanY + circle.getValue().y;
+                meanX = meanX + circle.getValue().getX_coord();
+                meanY = meanY + circle.getValue().getY_coord();
             }
             meanX = meanX / 4;
             meanY = meanY / 4;
             for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
-                if(circle.getValue().x < meanX && circle.getValue().y > meanY){// sol ust
+                if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() > meanY){// sol ust
                     orders.put("1", circle.getKey());
                 }
-                else if(circle.getValue().x < meanX && circle.getValue().y < meanY){ //sag ust
+                else if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() < meanY){ //sag ust
                     orders.put("2", circle.getKey());
                 }
-                else if(circle.getValue().x > meanX && circle.getValue().y < meanY){// sag alt
+                else if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() < meanY){// sag alt
                     orders.put("3", circle.getKey());
                 }
-                else if(circle.getValue().x > meanX && circle.getValue().y > meanY){// sol alt
+                else if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() > meanY){// sol alt
                     orders.put("4", circle.getKey());
                 }
             }
@@ -209,25 +211,25 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         }
         else if(screenOrien == 1){
             for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
-                if(circle.getValue().x == 0 || circle.getValue().y == 0){// 4 noktayi da ayni anda bulamazsa
+                if(circle.getValue().getX_coord() == 0 || circle.getValue().getY_coord() == 0){// 4 noktayi da ayni anda bulamazsa
                     return null;
                 }
-                meanX = meanX + circle.getValue().x;
-                meanY = meanY + circle.getValue().y;
+                meanX = meanX + circle.getValue().getX_coord();
+                meanY = meanY + circle.getValue().getY_coord();
             }
             meanX = meanX / 4;
             meanY = meanY / 4;
             for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
-                if(circle.getValue().x < meanX && circle.getValue().y < meanY){// sol ust
+                if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() < meanY){// sol ust
                     orders.put("1", circle.getKey());
                 }
-                else if(circle.getValue().x > meanX && circle.getValue().y < meanY){// sag ust
+                else if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() < meanY){// sag ust
                     orders.put("2", circle.getKey());
                 }
-                else if(circle.getValue().x > meanX && circle.getValue().y > meanY){// sag alt
+                else if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() > meanY){// sag alt
                     orders.put("3", circle.getKey());
                 }
-                else if(circle.getValue().x < meanX && circle.getValue().y > meanY){// sol alt
+                else if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() > meanY){// sol alt
                     orders.put("4", circle.getKey());
                 }
             }
@@ -236,25 +238,25 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         }
         else if(screenOrien == 2){
             for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
-                if(circle.getValue().x == 0 || circle.getValue().y == 0){// 4 noktayi da ayni anda bulamazsa
+                if(circle.getValue().getX_coord() == 0 || circle.getValue().getY_coord() == 0){// 4 noktayi da ayni anda bulamazsa
                     return null;
                 }
-                meanX = meanX + circle.getValue().x;
-                meanY = meanY + circle.getValue().y;
+                meanX = meanX + circle.getValue().getX_coord();
+                meanY = meanY + circle.getValue().getY_coord();
             }
             meanX = meanX / 4;
             meanY = meanY / 4;
             for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
-                if(circle.getValue().x > meanX && circle.getValue().y > meanY){// sol ust
+                if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() > meanY){// sol ust
                     orders.put("1", circle.getKey());
                 }
-                else if(circle.getValue().x < meanX && circle.getValue().y > meanY){// sag ust
+                else if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() > meanY){// sag ust
                     orders.put("2", circle.getKey());
                 }
-                else if(circle.getValue().x < meanX && circle.getValue().y < meanY){// sag alt
+                else if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() < meanY){// sag alt
                     orders.put("3", circle.getKey());
                 }
-                else if(circle.getValue().x > meanX && circle.getValue().y < meanY){// sol alt
+                else if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() < meanY){// sol alt
                     orders.put("4", circle.getKey());
                 }
             }
@@ -293,9 +295,9 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             Imgproc.minEnclosingCircle(new MatOfPoint2f(contours.get(i).toArray()), center, radius);
             if(Math.round(radius[0]) > 5) {
                 //Imgproc.circle(image, center, Math.round(radius[0]), new Scalar(255, 255, 255));
-                temp.x  = (int) center.x;
-                temp.y = (int) center.y;
-                temp.radius = Math.round(radius[0]);
+                temp.setX_coord((int) center.x);
+                temp.setY_coord((int) center.y);
+                temp.setRadius(Math.round(radius[0]));
                 circles.add(temp);
                 //Imgproc.drawContours(image, contours, -1, new Scalar(255, 0, 0), 2); //draw contour
             }
@@ -320,8 +322,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             tempC = findMatchCircle(hsvCircles, houghCircleList);
             circleCoordinates.put(colorCode, tempC);
             //debug amacli ekrana basarken kullanilio
-            Point center = new Point(tempC.x, tempC.y);
-            Imgproc.circle(image, center, tempC.radius, new Scalar(127, 255, 212), 3);
+            Point center = new Point(tempC.getX_coord(), tempC.getY_coord());
+            Imgproc.circle(image, center, (int) tempC.getRadius(), new Scalar(127, 255, 212), 3);
         }
         return image;
     }
@@ -342,9 +344,9 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             // circle outline
             //int radius = (int) Math.round(c[2]);
             //Imgproc.circle(image, center, radius, new Scalar(255,0,255), 3, 8, 0 );
-            temp.x = (int) Math.round(c[0]);
-            temp.y = (int) Math.round(c[1]);
-            temp.radius = (int) Math.round(c[2]);
+            temp.setX_coord((int) Math.round(c[0]));
+            temp.setY_coord((int) Math.round(c[1]));
+            temp.setRadius((int) Math.round(c[2]));
             houghPointList.add(temp);
         }
         return houghPointList;
@@ -356,10 +358,15 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Circle matchedCircle = new Circle(0,0,0);
         for (Circle hofCircle : hCircles){
             for(Circle hsvCir : hsvCircles){
-                if((hsvCir.x - tolerance) < hofCircle.x && hofCircle.x < (hsvCir.x + tolerance)  && (hsvCir.y - tolerance) < hofCircle.y && hofCircle.y < (hsvCir.y + tolerance) && (hsvCir.radius - toleranceRadius) < hofCircle.radius && hofCircle.radius < (hsvCir.radius + toleranceRadius)){
-                    matchedCircle.x = hsvCir.x;
-                    matchedCircle.y = hsvCir.y;
-                    matchedCircle.radius = hsvCir.radius;
+                if((hsvCir.getX_coord() - tolerance) < hofCircle.getX_coord()
+                        && hofCircle.getX_coord() < (hsvCir.getX_coord() + tolerance)
+                        && (hsvCir.getY_coord() - tolerance) < hofCircle.getY_coord()
+                        && hofCircle.getY_coord() < (hsvCir.getY_coord() + tolerance)
+                        && (hsvCir.getRadius() - toleranceRadius) < hofCircle.getRadius()
+                        && hofCircle.getRadius() < (hsvCir.getRadius() + toleranceRadius)){
+                    matchedCircle.setX_coord(hsvCir.getX_coord());
+                    matchedCircle.setY_coord(hsvCir.getY_coord());
+                    matchedCircle.setRadius(hsvCir.getRadius());
                 }
             }
         }

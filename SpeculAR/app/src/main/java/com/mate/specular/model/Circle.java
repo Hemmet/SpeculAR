@@ -1,30 +1,58 @@
 package com.mate.specular.model;
 
 
-public class Point {
+public class Circle {
     private Color color;
-    private double x_coord;
-    private double y_coord;
+    private int x_coord;
+    private int y_coord;
+    private int radius;
 
     /**
-     * Creates Point object with given
+     * Creates Circle object with given
      *
      * @param color the point has to have a color defined in Color enum.
      * @param x_coord the point has to have coordinates. This is x coordinate of it.
      * @param y_coord the point has to have coordinates. This is y coordinate of it.
      */
 
-    public Point(Color color, double x_coord, double y_coord) {
+    public Circle(Color color, int x_coord, int y_coord) {
         this.color = color;
         this.x_coord = x_coord;
         this.y_coord = y_coord;
+        this.radius = 0;
+    }
+
+    /**
+     *
+     * */
+
+    public Circle(Color color, int x_coord, int y_coord, int radius) {
+        this.color = color;
+        this.x_coord = x_coord;
+        this.y_coord = y_coord;
+        this.radius = radius;
+    }
+
+    /**
+     *
+     * */
+
+    public Circle(int x_coord, int y_coord, int radius) {
+        this.color = Color.BLACK;
+        this.x_coord = x_coord;
+        this.y_coord = y_coord;
+        this.radius = radius;
     }
 
     /**
      * This won't be used.
      */
 
-    public Point() {
+    public Circle() {
+        this.color = Color.BLACK;
+        this.x_coord = 0;
+        this.y_coord = 0;
+        this.radius = 0;
     }
 
     /**
@@ -47,7 +75,7 @@ public class Point {
     /**
      * @return x_coord the point has to have coordinates. This is x coordinate of it.
      */
-    public double getX_coord() {
+    public int getX_coord() {
         return x_coord;
     }
 
@@ -56,14 +84,14 @@ public class Point {
      *
      * @param x_coord the point has to have coordinates. This is x coordinate of it.
      */
-    public void setX_coord(double x_coord) {
+    public void setX_coord(int x_coord) {
         this.x_coord = x_coord;
     }
 
     /**
      * @return y_coord the point has to have coordinates. This is y coordinate of it.
      */
-    public double getY_coord() {
+    public int getY_coord() {
         return y_coord;
     }
 
@@ -72,7 +100,23 @@ public class Point {
      *
      * @param y_coord the point has to have coordinates. This is y coordinate of it.
      */
-    public void setY_coord(double y_coord) {
+    public void setY_coord(int y_coord) {
         this.y_coord = y_coord;
+    }
+
+    /**
+     *
+     * */
+
+    public int getRadius() {
+        return radius;
+    }
+
+    /**
+     *
+     * */
+
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 }
