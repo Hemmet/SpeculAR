@@ -106,6 +106,15 @@ public class PlaceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     });
                 }
             });
+
+            plcName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent openCameraActivity = new Intent(context, CameraActivity.class);
+                    openCameraActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(openCameraActivity);
+                }
+            });
         }
     }
 }

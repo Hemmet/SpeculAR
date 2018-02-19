@@ -63,26 +63,6 @@ public class PlaceListActivity extends AppCompatActivity {
             }
         });
 
-        placeView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                Intent intent = new Intent(PlaceListActivity.this, CameraActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                return true;
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
-        });
 
         addPlaceButton = findViewById(R.id.addPlaceButton);
         addPlaceButton.setOnClickListener(new View.OnClickListener() {
