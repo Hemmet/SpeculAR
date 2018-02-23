@@ -68,10 +68,9 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.i(TAG, "OpenCV loaded successfully");
-                    mOpenCvCameraView.enableView();
                     try {
-                        initializeOpenCVDependencies();
-                    } catch (IOException e) {
+                        mOpenCvCameraView.enableView();
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -83,10 +82,6 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             }
         }
     };
-
-    private void initializeOpenCVDependencies() throws IOException {
-        mOpenCvCameraView.enableView();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
