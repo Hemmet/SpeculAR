@@ -137,7 +137,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat image = inputFrame.rgba();
         Mat retMat = detectColor(image);
-        String pointOrders = pointOrder();
+        //String pointOrders = pointOrder();
         return retMat;
     }
 
