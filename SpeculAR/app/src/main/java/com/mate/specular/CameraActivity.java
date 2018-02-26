@@ -17,11 +17,16 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
+import org.opencv.core.MatOfPoint3;
 import org.opencv.core.Point;
+import org.opencv.core.Point3;
+import org.opencv.core.RotatedRect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -46,6 +51,10 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     private float[] lastAccels = new float[3];
     private float[] rotationMatrix = new float[16];
     private float[] orientation = new float[4];
+    private static int scaleFactor = 2;
+
+    List<MatOfPoint2f> points = new ArrayList<>();
+
 
     static {
         if (!OpenCVLoader.initDebug())
@@ -60,10 +69,9 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS: {
                     Log.i(TAG, "OpenCV loaded successfully");
-                    mOpenCvCameraView.enableView();
                     try {
-                        initializeOpenCVDependencies();
-                    } catch (IOException e) {
+                        mOpenCvCameraView.enableView();
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -76,20 +84,18 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         }
     };
 
-    private void initializeOpenCVDependencies() throws IOException {
-        mOpenCvCameraView.enableView();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MatOfPoint2f p = new MatOfPoint2f(new Point(350,350), new Point(700, 350), new Point(700,700), new Point(350,700));
+        points.add(p);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_camera);
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
         initializColorHashMap(colorHueCodes);
-
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 
     }
@@ -138,6 +144,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Mat image = inputFrame.rgba();
         Mat retMat = detectColor(image);
         //String pointOrders = pointOrder();
+        //Mat retMat = drawInfo(image/*detectColor(image)*/, 90,90,90,0,0,300,250);
+        String pointOrders = pointOrder();
         return retMat;
     }
 
@@ -175,7 +183,132 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             }
         }
     }
+    private Mat warp(Mat input, double alpha, double beta, double gamma, double dx, double dy, double dz, double f)
 
+    {
+
+        alpha = (alpha - 90.)*Math.PI/180.;
+        beta = (beta - 90.)*Math.PI/180.;
+        gamma = (gamma - 90.)*Math.PI/180.;
+
+        // get width and height for ease of use in matrices
+        double w = input.size().width;
+        double h = input.size().height;
+
+        // Projection 2D -> 3D matrix
+        int row = 0, col = 0;
+        double data[] = {  1, 0, -w/2,
+
+                0, 1, -h/2,
+
+                0, 0,    0,
+
+                0, 0,    1};
+        //allocate Mat before calling put
+        Mat A1 = new Mat( 4, 3, CvType.CV_32F );
+        A1.put( row, col, data );
+
+
+        // Rotation matrices around the X, Y, and Z axis
+        row = 0;
+        col = 0;
+        double datarx[] = {  1,          0,           0, 0,
+
+                0, Math.cos(alpha), -Math.sin(alpha), 0,
+
+                0, Math.sin(alpha),  Math.cos(alpha), 0,
+
+                0,          0,           0, 1};
+        //allocate Mat before calling put
+        Mat RX = new Mat( 4, 4, CvType.CV_32F );
+        RX.put( row, col, datarx );
+
+        row = 0;
+        col = 0;
+        double datary[] = {   Math.cos(beta), 0, -Math.sin(beta), 0,
+
+                0, 1,          0, 0,
+
+                Math.sin(beta), 0,  Math.cos(beta), 0,
+
+                0, 0,          0, 1};
+        //allocate Mat before calling put
+        Mat RY = new Mat( 4, 4, CvType.CV_32F );
+        RY.put( row, col, datary );
+
+        row = 0;
+        col = 0;
+        double datarz[] = {   Math.cos(gamma), -Math.sin(gamma), 0, 0,
+
+                Math.sin(gamma),  Math.cos(gamma), 0, 0,
+
+                0,          0,           1, 0,
+
+                0,          0,           0, 1};
+        //allocate Mat before calling put
+        Mat RZ = new Mat( 4, 4, CvType.CV_32F );
+        RZ.put( row, col, datarz );
+
+        // Composed rotation matrix with (RX, RY, RZ)
+
+        Mat RM = new Mat( 4, 4, CvType.CV_32F );
+        Mat tmp = new Mat( 4, 4, CvType.CV_32F );
+        Core.gemm(RX,RY,1,new Mat(),0,tmp);
+        Core.gemm(tmp,RZ,1,new Mat(),0,RM);
+
+        // Translation matrix
+        row = 0;
+        col = 0;
+        double datat[] = {   1, 0, 0, dx,
+
+                0, 1, 0, dy,
+
+                0, 0, 1, dz,
+
+                0, 0, 0, 1};
+        //allocate Mat before calling put
+        Mat T = new Mat( 4, 4, CvType.CV_32F );
+        T.put( row, col, datat );
+
+
+        // 3D -> 2D matrix
+
+        row = 0;
+        col = 0;
+        double datarev[] = {   f, 0, w/2, 0,
+
+                0, f, h/2, 0,
+
+                0, 0,   1, 0};
+        //allocate Mat before calling put
+        Mat A2 = new Mat( 3, 4, CvType.CV_32F );
+        A2.put( row, col, datarev );
+
+        // Final transformation matrix
+
+        Mat trans = new Mat( 3, 3, CvType.CV_32F );
+        Mat tmp2 =new Mat( 4, 3, CvType.CV_32F );
+        Mat tmp3 = new Mat( 4, 3, CvType.CV_32F );
+        Core.gemm(RM,A1,1,new Mat(),0,tmp3);
+        Core.gemm(T,tmp3,1,new Mat(),0,tmp2);
+        Core.gemm(A2,tmp2,1,new Mat(),0,trans);
+
+        // Apply matrix transformation
+        Mat output = new Mat();
+        Imgproc.warpPerspective(input, output, trans, input.size());
+        return output;
+    }
+    private Mat drawInfo(Mat image, double alpha, double beta, double gamma, double dx, double dy, double dz, double f){
+        MatOfPoint2f m = new MatOfPoint2f(warp(points.get(0), alpha, beta, gamma, dx, dy, dz, f));
+        MatOfPoint t = new MatOfPoint(m.toArray());
+
+        List<MatOfPoint> draw = new ArrayList<>();
+        draw.add(t);
+
+        Imgproc.drawContours(image, draw, -1, new Scalar(96,255,155), -5);
+
+        return image;
+    }
     public static String pointOrder(){
         if(screenOrien == -1)
             return null;
@@ -286,7 +419,6 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         List<Circle> circles = new ArrayList<Circle>();
         List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         Imgproc.findContours(mask, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
-        System.out.println(contours.size());
         //Imgproc.drawContours(image, contours, -1, new Scalar(0, 0, 0), 4); //draw contour
         for(int i = 0; i < contours.size(); i++){
             Circle temp = new Circle(0,0,0);
@@ -305,9 +437,11 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         return circles;
     }
 
-    public Mat detectColor(Mat image){
+    public Mat detectColor(Mat originalImage){
         //Log.i(TAG, "detectColor");
         Mat hsvImage = new Mat();
+        Mat image = new Mat();
+        Imgproc.pyrDown(originalImage, image);
         Imgproc.GaussianBlur(image, image, new Size(3,3), 2, 2);
         Imgproc.cvtColor(image, hsvImage, Imgproc.COLOR_RGB2HSV);
         Mat mask =  new Mat();
@@ -318,16 +452,25 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             List<Integer> thresholdValues = hValue.getValue();
             mask = thresholdHue(hsvImage, thresholdValues.get(0), thresholdValues.get(1), thresholdValues.get(2), thresholdValues.get(3));
             List<Circle> hsvCircles = hsvColorCircleDetect(mask, image);
+            //Sample down orani artirilirsa asagidaki hesaplamalar kontrol edilmelidir.
             Circle tempC = new Circle(0,0,0);
             tempC = findMatchCircle(hsvCircles, houghCircleList);
-            circleCoordinates.put(colorCode, tempC);
-            //debug amacli ekrana basarken kullanilio
             Point center = new Point(tempC.getX_coord(), tempC.getY_coord());
-            Imgproc.circle(image, center, (int) tempC.getRadius(), new Scalar(127, 255, 212), 3);
-        }
-        return image;
-    }
+            center.x *= scaleFactor;
+            center.y *= scaleFactor;
+            tempC.setX_coord((int) center.x);
+            tempC.setY_coord((int) center.y);
+            tempC.setRadius(tempC.getRadius() * scaleFactor);
+            circleCoordinates.put(colorCode, tempC);
+            Imgproc.circle(originalImage, center, (int) tempC.getRadius(), new Scalar(127, 255, 212), 3);
 
+        }
+        return originalImage;
+    }
+    private void drawCircle (Circle c, Mat image) {
+        Point center = new Point(c.getX_coord(), c.getY_coord());
+        Imgproc.circle(image, center, (int) c.getRadius(), new Scalar(127, 255, 212), 3);
+    }
     public static List<Circle> houghTransformCircle(Mat image){
         List<Circle> houghPointList = new ArrayList<Circle>();
         Mat circles = new Mat();

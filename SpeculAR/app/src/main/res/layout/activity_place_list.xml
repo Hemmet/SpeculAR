@@ -11,27 +11,33 @@
     tools:context="com.mate.specular.PlaceListActivity"
     android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/placeListView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center|bottom"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="20">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/placeListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="18"/>
 
         <Button
-            android:text="Add Place"
+            android:id="@+id/logoutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/addPlaceButton" />
-        <Button
             android:text="Log Out"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/addPlaceButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/logoutButton" />
+            android:text="Add Place"
+            android:layout_weight="1"/>
+
+
     </LinearLayout>
 
 </RelativeLayout>
