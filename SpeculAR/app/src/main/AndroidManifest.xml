@@ -22,6 +22,9 @@
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             android:screenOrientation="landscape" />
         <activity android:name=".LogInActivity" />
+        <activity android:name=".NewContentCameraActivity"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:screenOrientation="landscape"/>
     </application>
 
     <uses-permission android:name="android.permission.CAMERA" />
