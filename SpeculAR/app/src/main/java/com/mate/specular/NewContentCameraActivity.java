@@ -4,6 +4,10 @@ package com.mate.specular;
  * Created by ETS on 27.02.2018.
  */
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +15,7 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 
 import com.mate.specular.model.Circle;
+import com.mate.specular.util.frameProcess;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -23,10 +28,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NewContentCameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
+public class NewContentCameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener{
 
-    private static final String TAG = "CameraActivity";
+    private static final String TAG = "NewContentCameraActiv";
     private CameraBridgeViewBase mOpenCvCameraView;
+
+    public static Map<String, Circle> circleCoordinates = new HashMap<String, Circle>();
+
+    private SensorManager sensorManager;
+    private float[] lastMagFields = new float[3];;
+    private float[] lastAccels = new float[3];
+    private float[] rotationMatrix = new float[16];
+    private float[] orientation = new float[4];
+    public static int screenOrien = 0; // o sa dik 1 se sol 2 ise saga yatmis oluo baby
+
+    public static frameProcess frameProcessor = new frameProcess();
 
     static {
         if (!OpenCVLoader.initDebug())
@@ -65,6 +81,8 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+
+        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
     }
 
     @Override
@@ -72,6 +90,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         super.onPause();
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
+        sensorManager.unregisterListener(this);
 
     }
 
@@ -85,6 +104,8 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
             Log.d(TAG, "OpenCV library found inside package. Using it!");
             mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void onDestroy() {
@@ -104,7 +125,49 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
     }
 
     @Override
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        return inputFrame.rgba();
+    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
+        Mat image = inputFrame.rgba();
+        circleCoordinates = frameProcessor.detectColor(image);
+        String colorOrder = frameProcessor.pointOrder(screenOrien, circleCoordinates);
+        Log.i(TAG, colorOrder+"");
+        if(colorOrder != null)
+            //NEW MODEL CONTENT CREATION EKRANINA GONDERILECEK
+            Log.i(TAG,"basarili");
+        return image;
+    }
+
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
+
+    public void onSensorChanged(SensorEvent event) {
+        switch (event.sensor.getType()) {
+            case Sensor.TYPE_ACCELEROMETER:
+                System.arraycopy(event.values, 0, lastAccels, 0, 3);
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                System.arraycopy(event.values, 0, lastMagFields, 0, 3);
+                break;
+            default:
+                return;
+        }
+
+        if (SensorManager.getRotationMatrix(rotationMatrix, null, lastAccels, lastMagFields)) {
+            SensorManager.getOrientation(rotationMatrix, orientation);
+
+            float xAxis = (float) Math.toDegrees(orientation[1]);
+            float yAxis = (float) Math.toDegrees(orientation[2]);
+
+            int orientation = Configuration.ORIENTATION_UNDEFINED;
+            if ((yAxis <= 25) && (yAxis >= -25) && (xAxis >= -160)) {
+                screenOrien = 0;
+                orientation = Configuration.ORIENTATION_PORTRAIT;
+            } else if ((yAxis < -25) && (xAxis >= -20)) {
+                screenOrien = 1;
+                orientation = Configuration.ORIENTATION_LANDSCAPE;
+            } else if ((yAxis > 25) && (xAxis >= -20)){
+                screenOrien = 2;
+                orientation = Configuration.ORIENTATION_LANDSCAPE;
+            }
+        }
     }
 }

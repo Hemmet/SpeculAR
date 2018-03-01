@@ -14,5 +14,5 @@
         app:showAsAction="always"
         android:src="@drawable/ic_add"
         android:title="Settings" />
-    
+
 </menu>

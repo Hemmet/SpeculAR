@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mate.specular.model.Place;
+import com.mate.specular.util.PopUpWindow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +104,10 @@ public class PlaceListActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.addNewContent:
                 startActivity(new Intent(PlaceListActivity.this, NewContentCameraActivity.class));
+                break;
+            case R.id.settings:
+                final PopUpWindow popup = new PopUpWindow(getApplicationContext(), findViewById(R.id.linearLayout));
+                popup.show("User Settings" ,"In future there is some settings in here");
                 break;
             default:
                 break;
