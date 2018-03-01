@@ -14,10 +14,6 @@ import com.mate.specular.R;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-/**
- * Created by show on 2/27/2018.
- */
-
 /*Example usage:
 *
 *        final PopUpWindow popup = new PopUpWindow(getApplicationContext(), findViewById(R.id.cameraLayout));
@@ -56,6 +52,7 @@ public class PopUpWindow {
 
         if(Build.VERSION.SDK_INT>=21){
             mPopupWindow.setElevation(5.0f);
+
         }
 
         closeButton = (ImageButton) popUpView.findViewById(R.id.popUpCloseButton);

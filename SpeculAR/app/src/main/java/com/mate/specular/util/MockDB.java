@@ -3,9 +3,6 @@ package com.mate.specular.util;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by asd on 2/19/2018.
- */
 
 public class MockDB {
     public static Map<String, String> infoTags = new HashMap<>();
