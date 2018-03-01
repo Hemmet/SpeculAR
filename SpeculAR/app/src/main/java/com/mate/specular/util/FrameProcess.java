@@ -20,12 +20,12 @@ import java.util.Map;
  * Created by ETS on 1.03.2018.
  */
 
-public class frameProcess {
+public class FrameProcess {
     public static Map<String, List<Integer>> colorHueCodes = new HashMap<String, List<Integer>>();
-    public static final String TAG = "frameProcess.java";
+    public static final String TAG = "FrameProcess.java";
     int scaleFactor = 2;
 
-    public frameProcess(){
+    public FrameProcess(){
         initializColorHashMap(colorHueCodes);
     }
 

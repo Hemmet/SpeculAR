@@ -15,17 +15,15 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 
 import com.mate.specular.model.Circle;
-import com.mate.specular.util.frameProcess;
+import com.mate.specular.util.FrameProcess;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint2f;
-import java.util.ArrayList;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class NewContentCameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener{
@@ -42,7 +40,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
     private float[] orientation = new float[4];
     public static int screenOrien = 0; // o sa dik 1 se sol 2 ise saga yatmis oluo baby
 
-    public static frameProcess frameProcessor = new frameProcess();
+    public static FrameProcess frameProcessor = new FrameProcess();
 
     static {
         if (!OpenCVLoader.initDebug())
