@@ -1,6 +1,8 @@
 package com.mate.specular.util;
 
 import com.mate.specular.model.Circle;
+import com.mate.specular.model.Frame;
+import com.mate.specular.model.ObjectModel;
 
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.Core;
@@ -9,6 +11,9 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mert on 02.03.18.
@@ -48,5 +53,14 @@ public class PointProcess {
        return ret;
     }
 
+    public static MatOfPoint2f createReferenceMatrix(Frame frame){
+        List<ObjectModel> objects = frame.getObjects();
+        List<Point> points = new ArrayList<>();
 
+        for(ObjectModel object : objects){
+            points.add(new Point(object.getX_coord(),object.getY_coord()));
+        }
+
+        return new MatOfPoint2f(points.toArray(new Point[points.size()]));
+    }
 }
