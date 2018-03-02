@@ -42,7 +42,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
     //sensor icin degiskenler
     private SensorManager sensorManager;
-    private float[] lastMagFields = new float[3];;
+    private float[] lastMagFields = new float[3];
     private float[] lastAccels = new float[3];
     private float[] rotationMatrix = new float[16];
     private float[] orientation = new float[4];
