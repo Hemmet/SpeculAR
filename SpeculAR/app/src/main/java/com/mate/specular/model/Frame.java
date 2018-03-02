@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Frame {
-    private List<Object> objects;
+    private List<ObjectModel> objects;
     private Circle[] circles = new Circle[4];
 
     /**
@@ -14,10 +14,10 @@ public class Frame {
      * @param  objects list of objects that are inside the frame
      * @param  circles array of circles with size of 4 ,
      *                that are located at top-left, top-right, bottom-left, bottom-right of the frame
-     * @see         Object
+     * @see         ObjectModel
      * @see         Circle
      */
-    public Frame(List<Object> objects, Circle[] circles) {
+    public Frame(List<ObjectModel> objects, Circle[] circles) {
         this.objects = objects;
         this.circles = circles;
     }
@@ -31,18 +31,18 @@ public class Frame {
 
     /**
      * @return list of objects that are inside the frame
-     * @see         Object
+     * @see         ObjectModel
      */
-    public List<Object> getObjects() {
+    public List<ObjectModel> getObjects() {
         return objects;
     }
     /**
      * Sets
      *
      * @param  objects list of objects that are inside the frame
-     * @see         Object
+     * @see         ObjectModel
      */
-    public void setObjects(List<Object> objects) {
+    public void setObjects(List<ObjectModel> objects) {
         this.objects = objects;
     }
 
