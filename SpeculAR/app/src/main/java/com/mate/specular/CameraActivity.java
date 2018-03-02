@@ -15,6 +15,7 @@ import com.mate.specular.model.Circle;
 import com.mate.specular.model.Color;
 import com.mate.specular.model.Frame;
 import com.mate.specular.util.FrameFinder;
+import com.mate.specular.util.PointProcess;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -146,6 +147,10 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         //String pointOrders = pointOrder();
         //Mat retMat = drawInfo(image/*detectColor(image)*/, 90,90,90,0,0,300,250);
         currentFrame = FrameFinder.findFrameWith(stringOrderToColorList(pointOrder()));
+        Mat homographyMat = PointProcess.fındHomography(currentFrame.getCircles(), currentCircles);
+        MatOfPoint2f objectRefs = PointProcess.createReferenceMatrix(currentFrame);
+        MatOfPoint2f curObjects = PointProcess.applyHomography(objectRefs, homographyMat);
+        
         return retMat;
     }
 
