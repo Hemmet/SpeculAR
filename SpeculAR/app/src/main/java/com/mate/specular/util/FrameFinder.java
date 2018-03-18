@@ -1,16 +1,11 @@
 package com.mate.specular.util;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.mate.specular.database.MockDB;
 import com.mate.specular.model.Circle;
+import com.mate.specular.model.Color;
 import com.mate.specular.model.Frame;
-import com.mate.specular.model.Place;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by met on 2/16/2018.
@@ -18,7 +13,8 @@ import java.util.Map;
 
 public class FrameFinder {
 
-    public static Frame findFrameWith(Circle[] circles){
+    public static Frame findFrameWith(List<Color> colorOrder){
+        /*
         if(circles.length != 4) return null; //the frame have to have exactly 4 points! If not then something's wrong.
 
         //I assumed that I know which place I am in.
@@ -45,6 +41,19 @@ public class FrameFinder {
             if(match == 4){
                 return frame;
             }
+        }
+        return null;
+        */
+        if(colorOrder.size() != 4) return null; //the frame have to have exactly 4 points! If not then something's wrong.
+
+        //I assumed that I know which place I am in.
+
+        for (Frame frame: MockDB.frames) {
+            Circle[] circles = frame.getCircles();
+            if(colorOrder.get(0).equals(circles[0]) &&
+                    colorOrder.get(1).equals(circles[1]) &&
+                    colorOrder.get(2).equals(circles[2]) &&
+                    colorOrder.get(3).equals(circles[3])) return frame;
         }
         return null;
     }

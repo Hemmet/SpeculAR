@@ -12,6 +12,10 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 
 import com.mate.specular.model.Circle;
+import com.mate.specular.model.Color;
+import com.mate.specular.model.Frame;
+import com.mate.specular.util.FrameFinder;
+import com.mate.specular.util.PointProcess;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -38,11 +42,13 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     private CameraBridgeViewBase mOpenCvCameraView;
     public static Map<String, List<Integer>> colorHueCodes = new HashMap<String, List<Integer>>();
     public static Map<String, Circle> circleCoordinates = new HashMap<String, Circle>();
+    private static Circle[] currentCircles = new Circle[4];
+    private static Frame currentFrame;
     public static int screenOrien = 0; // o sa dik 1 se sol 2 ise saga yatmis oluo baby
 
     //sensor icin degiskenler
     private SensorManager sensorManager;
-    private float[] lastMagFields = new float[3];;
+    private float[] lastMagFields = new float[3];
     private float[] lastAccels = new float[3];
     private float[] rotationMatrix = new float[16];
     private float[] orientation = new float[4];
@@ -140,7 +146,11 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Mat retMat = detectColor(image);
         //String pointOrders = pointOrder();
         //Mat retMat = drawInfo(image/*detectColor(image)*/, 90,90,90,0,0,300,250);
-        String pointOrders = pointOrder();
+        currentFrame = FrameFinder.findFrameWith(stringOrderToColorList(pointOrder()));
+        Mat homographyMat = PointProcess.fındHomography(currentFrame.getCircles(), currentCircles);
+        MatOfPoint2f objectRefs = PointProcess.createReferenceMatrix(currentFrame);
+        MatOfPoint2f curObjects = PointProcess.applyHomography(objectRefs, homographyMat);
+        
         return retMat;
     }
 
@@ -177,6 +187,19 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                 orientation = Configuration.ORIENTATION_LANDSCAPE;
             }
         }
+    }
+    private List<Color> stringOrderToColorList(String order){
+        char[] colorOrder = order.toCharArray();
+        List<Color> colorList = new ArrayList<>();
+
+        for (char color : colorOrder){
+            if(color == 'R') colorList.add(Color.RED);
+            else if(color == 'B') colorList.add(Color.BLUE);
+            else if(color == 'Y') colorList.add(Color.GOLD);
+            else if(color == 'G') colorList.add(Color.GREEN);
+            else colorList.add(Color.BLACK);
+        }
+        return colorList;
     }
     private Mat warp(Mat input, double alpha, double beta, double gamma, double dx, double dy, double dz, double f)
 
@@ -323,15 +346,19 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
                 if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() > meanY){// sol ust
                     orders.put("1", circle.getKey());
+                    currentCircles[0] = circle.getValue();
                 }
                 else if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() < meanY){ //sag ust
                     orders.put("2", circle.getKey());
+                    currentCircles[1] = circle.getValue();
                 }
                 else if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() < meanY){// sag alt
                     orders.put("3", circle.getKey());
+                    currentCircles[2] = circle.getValue();
                 }
                 else if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() > meanY){// sol alt
                     orders.put("4", circle.getKey());
+                    currentCircles[3] = circle.getValue();
                 }
             }
             order = orders.get("1") + orders.get("2") + orders.get("3") + orders.get("4");

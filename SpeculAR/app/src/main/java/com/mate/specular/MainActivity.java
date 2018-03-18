@@ -9,7 +9,7 @@ import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.mate.specular.util.MockDB;
+import com.mate.specular.database.MockDB;
 
 import org.opencv.android.OpenCVLoader;
 
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MockDB.inializeMockDB();
+        MockDB.initializeMockDB();
 
         // Initialize Firebase Auth
         mFirebaseAuth = FirebaseAuth.getInstance();
