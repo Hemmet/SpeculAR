@@ -4,6 +4,7 @@ package com.mate.specular;
  * Created by ETS on 27.02.2018.
  */
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -128,9 +129,12 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         circleCoordinates = frameProcessor.detectColor(image);
         String colorOrder = frameProcessor.pointOrder(screenOrien, circleCoordinates);
         Log.i(TAG, colorOrder+"");
-        if(colorOrder != null)
+        //TODO color order check islemi degisecek
+        if(colorOrder != null) {
             //NEW MODEL CONTENT CREATION EKRANINA GONDERILECEK
-            Log.i(TAG,"basarili");
+            startActivity(new Intent(NewContentCameraActivity.this, PlaceListActivity.class));
+            Log.i(TAG, "basarili");
+        }
         return image;
     }
 
