@@ -144,7 +144,7 @@ public class FrameProcess {
         if(screenOrien == -1)
             return null;
         String order = "";
-        int meanX = 0, meanY = 0; //should be double
+        int meanX = 0, meanY = 0;
         Map<String, String> orders = new HashMap<String, String>();
         if(screenOrien == 0){
             for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
@@ -240,6 +240,11 @@ public class FrameProcess {
             return order;
         }
         return null;
+    }
+
+    public static Mat detectColorDensity(Mat image){
+
+        return new Mat();
     }
 
     public static void initializColorHashMap(Map<String, List<Integer>> colorHueCodes){

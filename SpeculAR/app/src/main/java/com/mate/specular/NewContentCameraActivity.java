@@ -5,6 +5,7 @@ package com.mate.specular;
  */
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -23,7 +24,6 @@ import android.widget.Button;
 
 import com.mate.specular.model.Circle;
 import com.mate.specular.util.FrameProcess;
-import com.mate.specular.util.PopUpWindow;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -34,6 +34,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,9 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
     private static final String TAG = "NewContentCameraActiv";
     private CameraBridgeViewBase mOpenCvCameraView;
     private Button captureButton;
+    Context activityContext;
+    private AlertDialog processWaitDialog;
+    Mat image;
 
     public static Map<String, Circle> circleCoordinates = new HashMap<String, Circle>();
 
@@ -85,7 +89,6 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_new_content_camera);
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.camera_view);
@@ -94,15 +97,33 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
 
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 
+        activityContext = this;
+
         captureButton = findViewById(R.id.captureFrameButton);
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+                //Process pop up
+                AlertDialog.Builder builder;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    builder = new AlertDialog.Builder(activityContext, android.R.style.Theme_Material_Dialog_Alert);
+                } else {
+                    builder = new AlertDialog.Builder(activityContext);
+                }
+                builder.setTitle("Please Wait Processing...")
+                .setMessage("This will not take long");
+
+                processWaitDialog = builder.create();
+                processWaitDialog.show();
+
+                //image uzerinde renk yogunlugu hesapla
+
+                processWaitDialog.dismiss();
+
+                String colorOrder = "";//TODO ColorOrderUnique gelen alinacak
+                showColorOrderAlert(colorOrder);
             }
         });
-
-        showColorOrderAlert();
     }
 
     @Override
@@ -145,11 +166,12 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
-        Mat image = inputFrame.rgba();
+        image = inputFrame.rgba();
         circleCoordinates = frameProcessor.detectColor(image);
         String colorOrder = frameProcessor.pointOrder(screenOrien, circleCoordinates);
-        Log.i(TAG, colorOrder+"");
-        //TODO color order check islemi degisecek
+        //Log.i(TAG, colorOrder+"");
+
+        //TODO color order check islemi degisecek capture butonunun onClickinde set edilecek
         if(colorOrder != null) {
             Log.i(TAG, "Color order detected successfully");
             Mat downSampledImage =  new Mat();
@@ -160,6 +182,8 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
 
             Intent intent = new Intent(NewContentCameraActivity.this, CreateModelActivity.class);
             intent.putExtra("image", byteArray);
+            intent.putExtra("circleCoordinates", (Serializable) circleCoordinates);
+            intent.putExtra("colorOrder", colorOrder);
             startActivity(intent);
         }
         return image;
@@ -210,7 +234,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         }
     }
 
-    private void showColorOrderAlert() {
+    private void showColorOrderAlert(String colorOrder) {
         AlertDialog.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
@@ -218,7 +242,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
             builder = new AlertDialog.Builder(this);
         }
         builder.setTitle("Color Order Set")
-                .setMessage("Please, set your color XXX")
+                .setMessage("Please, set your color: " + colorOrder)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
