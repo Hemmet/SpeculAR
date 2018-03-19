@@ -144,14 +144,24 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Mat image = inputFrame.rgba();
         circleCoordinates = frameProcessor.detectColor(image);
+        //Debug amaciyla kullanilan for
+        for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
+            Point center = new Point(circle.getValue().getX_coord(), circle.getValue().getY_coord());
+            Imgproc.circle(image, center, (int) circle.getValue().getRadius(), new Scalar(127, 255, 212), 3);
+        }
         String pointOrders = frameProcessor.pointOrder(screenOrien, circleCoordinates);
 
+        Log.i(TAG,pointOrders+"");
         //Mat retMat = drawInfo(image/*detectColor(image)*/, 90,90,90,0,0,300,250);
-        currentFrame = FrameFinder.findFrameWith(stringOrderToColorList(pointOrders));
-        if(currentFrame != null) {
-            Mat homographyMat = PointProcess.fındHomography(currentFrame.getCircles(), FrameProcess.currentCircles);
-            MatOfPoint2f objectRefs = PointProcess.createReferenceMatrix(currentFrame);
-            MatOfPoint2f curObjects = PointProcess.applyHomography(objectRefs, homographyMat);
+
+        
+        if(pointOrders != null) {
+            currentFrame = FrameFinder.findFrameWith(stringOrderToColorList(pointOrders));
+            if(currentFrame != null){
+                Mat homographyMat = PointProcess.fındHomography(currentFrame.getCircles(), FrameProcess.currentCircles);
+                MatOfPoint2f objectRefs = PointProcess.createReferenceMatrix(currentFrame);
+                MatOfPoint2f curObjects = PointProcess.applyHomography(objectRefs, homographyMat);
+            }
         }
         return image;
     }
