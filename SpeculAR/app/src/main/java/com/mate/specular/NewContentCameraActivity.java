@@ -4,6 +4,8 @@ package com.mate.specular;
  * Created by ETS on 27.02.2018.
  */
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -11,13 +13,16 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import com.mate.specular.model.Circle;
 import com.mate.specular.util.FrameProcess;
+import com.mate.specular.util.PopUpWindow;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -35,6 +40,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
 
     private static final String TAG = "NewContentCameraActiv";
     private CameraBridgeViewBase mOpenCvCameraView;
+    private Button captureButton;
 
     public static Map<String, Circle> circleCoordinates = new HashMap<String, Circle>();
 
@@ -86,6 +92,11 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         mOpenCvCameraView.setCvCameraViewListener(this);
 
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+
+        captureButton = findViewById(R.id.captureFrameButton);
+        captureButton.setOnClickListener();
+
+        showColorOrderAlert();
     }
 
     @Override
@@ -94,7 +105,6 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         if (mOpenCvCameraView != null)
             mOpenCvCameraView.disableView();
         sensorManager.unregisterListener(this);
-
     }
 
     @Override
@@ -135,6 +145,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         Log.i(TAG, colorOrder+"");
         //TODO color order check islemi degisecek
         if(colorOrder != null) {
+            Log.i(TAG, "Color order detected successfully");
             Mat downSampledImage =  new Mat();
             Imgproc.pyrDown(image, downSampledImage);
 
@@ -144,7 +155,6 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
             Intent intent = new Intent(NewContentCameraActivity.this, CreateModelActivity.class);
             intent.putExtra("image", byteArray);
             startActivity(intent);
-            Log.i(TAG, "basarili");
         }
         return image;
     }
@@ -192,5 +202,22 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
                 orientation = Configuration.ORIENTATION_LANDSCAPE;
             }
         }
+    }
+
+    private void showColorOrderAlert() {
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(this);
+        }
+        builder.setTitle("Color Order Set")
+                .setMessage("Please, set your color XXX")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .show();
     }
 }

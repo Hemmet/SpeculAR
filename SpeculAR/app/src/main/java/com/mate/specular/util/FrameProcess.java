@@ -94,10 +94,12 @@ public class FrameProcess {
         }
         return circleCoordinates;
     }
+
     private void drawCircle (Circle c, Mat image) {
         Point center = new Point(c.getX_coord(), c.getY_coord());
         Imgproc.circle(image, center, (int) c.getRadius(), new Scalar(127, 255, 212), 3);
     }
+
     public static List<Circle> houghTransformCircle(Mat image){
         List<Circle> houghPointList = new ArrayList<Circle>();
         Mat circles = new Mat();
@@ -240,7 +242,6 @@ public class FrameProcess {
         return null;
     }
 
-
     public static void initializColorHashMap(Map<String, List<Integer>> colorHueCodes){
         List<Integer> red = new ArrayList<Integer>();
         red.add(160); //min H value
@@ -250,17 +251,17 @@ public class FrameProcess {
         colorHueCodes.put("R", red);
 
         List<Integer> green = new ArrayList<Integer>();
-        green.add(40);
-        green.add(80);
-        green.add(40);
-        green.add(70);
+        green.add(40);//40
+        green.add(80);//80
+        green.add(70);//40
+        green.add(70);//70
         colorHueCodes.put("G", green);
 
         List<Integer> blue = new ArrayList<Integer>();
-        blue.add(80);
-        blue.add(120);
-        blue.add(150);
-        blue.add(0);
+        blue.add(80);//80
+        blue.add(120);//120
+        blue.add(150);//150
+        blue.add(70);//0
         colorHueCodes.put("B", blue);
 
         List<Integer> yellow = new ArrayList<Integer>();
