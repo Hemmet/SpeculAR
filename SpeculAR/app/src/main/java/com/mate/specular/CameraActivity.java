@@ -148,10 +148,11 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
         //Mat retMat = drawInfo(image/*detectColor(image)*/, 90,90,90,0,0,300,250);
         currentFrame = FrameFinder.findFrameWith(stringOrderToColorList(pointOrders));
-        Mat homographyMat = PointProcess.fındHomography(currentFrame.getCircles(), FrameProcess.currentCircles);
-        MatOfPoint2f objectRefs = PointProcess.createReferenceMatrix(currentFrame);
-        MatOfPoint2f curObjects = PointProcess.applyHomography(objectRefs, homographyMat);
-        
+        if(currentFrame != null) {
+            Mat homographyMat = PointProcess.fındHomography(currentFrame.getCircles(), FrameProcess.currentCircles);
+            MatOfPoint2f objectRefs = PointProcess.createReferenceMatrix(currentFrame);
+            MatOfPoint2f curObjects = PointProcess.applyHomography(objectRefs, homographyMat);
+        }
         return image;
     }
 
@@ -190,6 +191,9 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         }
     }
     private List<Color> stringOrderToColorList(String order){
+        if(order == null){
+            return null;
+        }
         char[] colorOrder = order.toCharArray();
         List<Color> colorList = new ArrayList<>();
 

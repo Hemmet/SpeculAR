@@ -44,7 +44,7 @@ public class FrameFinder {
         }
         return null;
         */
-        if(colorOrder.size() != 4) return null; //the frame have to have exactly 4 points! If not then something's wrong.
+        if(colorOrder == null || colorOrder.size() != 4) return null; //the frame have to have exactly 4 points! If not then something's wrong.
 
         //I assumed that I know which place I am in.
 
