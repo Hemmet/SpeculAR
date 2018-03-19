@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,10 +13,30 @@
         android:layout_height="match_parent" />
 
     <ImageButton
-        android:id="@+id/infoImageView"
+        android:id="@+id/addOkImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/info_tag_black"
-        android:background="@android:color/transparent"  />
+        android:src="@drawable/ok_button"
+        android:background="@android:color/transparent"
+        android:layout_alignParentRight="true"
+        android:layout_above="@id/addQuizTagImageButton"/>
 
-</android.support.constraint.ConstraintLayout>
+    <ImageButton
+        android:id="@+id/addQuizTagImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/add_quiz_tag_button"
+        android:background="@android:color/transparent"
+        android:layout_alignParentRight="true"
+        android:layout_above="@id/addInfoTagImageButton"/>
+
+    <ImageButton
+        android:id="@+id/addInfoTagImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/add_info_tag_button"
+        android:background="@android:color/transparent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>
