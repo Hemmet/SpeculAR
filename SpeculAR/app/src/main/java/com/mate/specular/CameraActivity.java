@@ -11,6 +11,7 @@ import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 
 import com.mate.specular.model.Circle;
 import com.mate.specular.model.Color;
@@ -47,6 +48,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     private static ConstraintLayout constraintLayout;
     private static Frame currentFrame;
     public static int screenOrien = 0; // o sa dik 1 se sol 2 ise saga yatmis oluo baby
+    private static List<ImageButton> buttonList = new ArrayList<>();
 
 
     public static FrameProcess frameProcessor = new FrameProcess();
@@ -146,6 +148,15 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                clearButtonsFromView();
+                clearButtonList();
+            }
+        });
+
         Mat image = inputFrame.rgba();
         circleCoordinates = frameProcessor.detectColor(image);
         //Debug amaciyla kullanilan for
@@ -179,6 +190,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                         @Override
                         public void run() {
                             constraintLayout.addView(i);
+                            buttonList.add(i);
                         }
                     });
                 }
@@ -369,4 +381,12 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Imgproc.circle(image, center, (int) c.getRadius(), new Scalar(127, 255, 212), 3);
     }
 
+    private void clearButtonsFromView(){
+        for(ImageButton i : buttonList){
+            constraintLayout.removeView(i);
+        }
+    }
+    private void clearButtonList(){
+        buttonList.clear();
+    }
 }
