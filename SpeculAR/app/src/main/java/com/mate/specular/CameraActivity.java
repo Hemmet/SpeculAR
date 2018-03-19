@@ -1,6 +1,7 @@
 package com.mate.specular;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 
@@ -20,6 +22,7 @@ import com.mate.specular.model.InfoButton;
 import com.mate.specular.util.FrameFinder;
 import com.mate.specular.util.FrameProcess;
 import com.mate.specular.util.PointProcess;
+import com.mate.specular.util.PopUpWindow;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -49,7 +52,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     private static Frame currentFrame;
     public static int screenOrien = 0; // o sa dik 1 se sol 2 ise saga yatmis oluo baby
     private static List<ImageButton> buttonList = new ArrayList<>();
-
+    private static Context activityContext;
 
     public static FrameProcess frameProcessor = new FrameProcess();
 
@@ -94,6 +97,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activityContext = this;
         MatOfPoint2f p = new MatOfPoint2f(new Point(350,350), new Point(700, 350), new Point(700,700), new Point(350,700));
         points.add(p);
 
@@ -191,6 +195,13 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                         public void run() {
                             constraintLayout.addView(i);
                             buttonList.add(i);
+                            i.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final PopUpWindow popup = new PopUpWindow(activityContext, findViewById(R.id.camera_view_layout));
+                                    popup.show(i.getHeader() ,i.getInfo());
+                                }
+                            });
                         }
                     });
                 }
