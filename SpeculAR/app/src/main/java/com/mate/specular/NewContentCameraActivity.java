@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
@@ -94,7 +95,12 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
 
         captureButton = findViewById(R.id.captureFrameButton);
-        captureButton.setOnClickListener();
+        captureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                
+            }
+        });
 
         showColorOrderAlert();
     }
