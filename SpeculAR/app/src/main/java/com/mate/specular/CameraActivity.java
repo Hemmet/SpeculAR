@@ -154,15 +154,18 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Log.i(TAG,pointOrders+"");
         //Mat retMat = drawInfo(image/*detectColor(image)*/, 90,90,90,0,0,300,250);
 
-        
+        MatOfPoint2f objectRefs = null;
+        MatOfPoint2f curObjects = null;
+
         if(pointOrders != null) {
             currentFrame = FrameFinder.findFrameWith(stringOrderToColorList(pointOrders));
-                Mat homographyMat = PointProcess.fındHomography(currentFrame.getCircles(), FrameProcess.currentCircles);
             if(currentFrame != null){
-                MatOfPoint2f objectRefs = PointProcess.createReferenceMatrix(currentFrame);
+                Mat homographyMat = PointProcess.fındHomography(currentFrame.getCircles(), FrameProcess.currentCircles);
+                objectRefs = PointProcess.createReferenceMatrix(currentFrame);
+                curObjects = PointProcess.applyHomography(objectRefs, homographyMat);
             }
-                MatOfPoint2f curObjects = PointProcess.applyHomography(objectRefs, homographyMat);
         }
+        
         return image;
     }
 
