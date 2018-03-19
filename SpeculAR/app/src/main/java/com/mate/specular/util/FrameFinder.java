@@ -50,10 +50,10 @@ public class FrameFinder {
 
         for (Frame frame: MockDB.frames) {
             Circle[] circles = frame.getCircles();
-            if(colorOrder.get(0).equals(circles[0]) &&
-                    colorOrder.get(1).equals(circles[1]) &&
-                    colorOrder.get(2).equals(circles[2]) &&
-                    colorOrder.get(3).equals(circles[3])) return frame;
+            if(colorOrder.get(0).equals(circles[0].getColor()) &&
+                    colorOrder.get(1).equals(circles[1].getColor()) &&
+                    colorOrder.get(2).equals(circles[2].getColor()) &&
+                    colorOrder.get(3).equals(circles[3].getColor())) return frame;
         }
         return null;
     }

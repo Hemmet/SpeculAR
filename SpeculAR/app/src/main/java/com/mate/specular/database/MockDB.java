@@ -32,10 +32,10 @@ public class MockDB {
     }
     private static Circle[] createCircles(){
         Circle[] circle = new Circle[4];
-        circle[0] = new Circle(Color.RED,0,0);
-        circle[1] = new Circle(Color.GOLD,0,250);
+        circle[0] = new Circle(Color.GOLD,0,0);
+        circle[1] = new Circle(Color.BLUE,0,250);
         circle[2] = new Circle(Color.GREEN,-50,0);
-        circle[3] = new Circle(Color.BLUE,-50,250);
+        circle[3] = new Circle(Color.RED,-50,250);
 
         return circle;
     }
