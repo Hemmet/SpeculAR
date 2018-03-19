@@ -188,15 +188,19 @@ public class FrameProcess {
             for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
                 if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() < meanY){// sol ust
                     orders.put("1", circle.getKey());
+                    currentCircles[0] = circle.getValue();
                 }
                 else if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() < meanY){// sag ust
                     orders.put("2", circle.getKey());
+                    currentCircles[1] = circle.getValue();
                 }
                 else if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() > meanY){// sag alt
                     orders.put("3", circle.getKey());
+                    currentCircles[2] = circle.getValue();
                 }
                 else if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() > meanY){// sol alt
                     orders.put("4", circle.getKey());
+                    currentCircles[3] = circle.getValue();
                 }
             }
             order = orders.get("1") + orders.get("2") + orders.get("3") + orders.get("4");
@@ -215,15 +219,19 @@ public class FrameProcess {
             for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
                 if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() > meanY){// sol ust
                     orders.put("1", circle.getKey());
+                    currentCircles[0] = circle.getValue();
                 }
                 else if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() > meanY){// sag ust
                     orders.put("2", circle.getKey());
+                    currentCircles[1] = circle.getValue();
                 }
                 else if(circle.getValue().getX_coord() < meanX && circle.getValue().getY_coord() < meanY){// sag alt
                     orders.put("3", circle.getKey());
+                    currentCircles[2] = circle.getValue();
                 }
                 else if(circle.getValue().getX_coord() > meanX && circle.getValue().getY_coord() < meanY){// sol alt
                     orders.put("4", circle.getKey());
+                    currentCircles[3] = circle.getValue();
                 }
             }
             order = orders.get("1") + orders.get("2") + orders.get("3") + orders.get("4");
