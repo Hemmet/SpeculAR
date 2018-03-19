@@ -6,6 +6,7 @@ package com.mate.specular;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -22,8 +23,11 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -131,11 +135,28 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         Log.i(TAG, colorOrder+"");
         //TODO color order check islemi degisecek
         if(colorOrder != null) {
-            //NEW MODEL CONTENT CREATION EKRANINA GONDERILECEK
-            startActivity(new Intent(NewContentCameraActivity.this, PlaceListActivity.class));
+            Mat downSampledImage =  new Mat();
+            Imgproc.pyrDown(image, downSampledImage);
+
+            //Do the image serializable
+            byte[] byteArray = matToByteArray(downSampledImage);
+
+            Intent intent = new Intent(NewContentCameraActivity.this, CreateModelActivity.class);
+            intent.putExtra("image", byteArray);
+            startActivity(intent);
             Log.i(TAG, "basarili");
         }
         return image;
+    }
+
+    private byte[] matToByteArray(Mat mat) {
+        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+        Bitmap bitmap = Bitmap.createBitmap(mat.cols(),  mat.rows(),Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(mat, bitmap);
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+        byte[] byteArray = bStream.toByteArray();
+
+        return byteArray;
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
