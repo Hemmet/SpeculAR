@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/popUpLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="3dp"
+    android:background="@color/white">
+
+    <ImageButton
+        android:id="@+id/editQuizPopUpClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/close_icon"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="@null"/>
+
+    <EditText
+        android:id="@+id/editQuizHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textAllCaps="true"/>
+
+    <EditText
+        android:id="@+id/quizQuestionEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:padding="25sp"
+        android:textColor="@color/black" />
+
+    <LinearLayout
+        android:layout_below="@id/quizQuestionEdit"
+        android:id="@+id/answerList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            />
+        <LinearLayout
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="2">
+
+            <EditText
+                android:id="@+id/answer1Edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="answer1" />
+
+            <EditText
+                android:id="@+id/answer2Edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="answer2" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1">
+
+
+            <EditText
+                android:id="@+id/answer3Edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="answer3" />
+
+            <EditText
+                android:id="@+id/answer4Edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="answer4" />
+        </LinearLayout>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            />
+
+    </LinearLayout>
+
+    <RadioGroup
+        android:layout_below="@id/answerList"
+        android:id="@+id/rdgroup"
+        android:layout_marginTop="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton android:id="@+id/correct1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Correct 1"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/correct2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Correct 2"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/correct3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Correct 3"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/correct4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Correct 4"
+            android:onClick="onRadioButtonClicked"/>
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_below="@id/rdgroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="5">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            />
+        <Button
+            android:id="@+id/buttonDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="15dp"
+            android:text="OK"
+            />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            />
+    </LinearLayout>
+</RelativeLayout>
