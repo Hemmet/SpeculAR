@@ -1,11 +1,6 @@
 package com.mate.specular.model;
 
-/**
- * Created by mert on 20.03.18.
- */
-
 public class QuizData {
-    String header;
     String content;
     String ans1;
     String ans2;
@@ -13,12 +8,13 @@ public class QuizData {
     String ans4;
     String correct;
 
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(String header) {
-        this.header = header;
+    public QuizData(String content, String ans1, String ans2, String ans3, String ans4, String correct){
+        this.content = content;
+        this.ans1 = ans1;
+        this.ans2 = ans2;
+        this.ans3 = ans3;
+        this.ans4 = ans4;
+        this.correct = correct;
     }
 
     public String getContent() {
