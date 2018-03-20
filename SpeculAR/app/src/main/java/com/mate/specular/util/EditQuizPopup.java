@@ -146,7 +146,7 @@ public class EditQuizPopup {
 
         }
 
-        closeButton = (ImageButton) popUpView.findViewById(R.id.editablePopUpCloseButton);
+        closeButton = (ImageButton) popUpView.findViewById(R.id.editQuizPopUpClose);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
