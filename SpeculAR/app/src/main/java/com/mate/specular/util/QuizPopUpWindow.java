@@ -12,35 +12,30 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.mate.specular.R;
-import com.mate.specular.model.Color;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
-
-/**
- * Created by mert on 20.03.18.
- */
 
 public class QuizPopUpWindow {
     Context parentContext;
     View parentView;
     ImageButton closeButton;
 
-    public QuizPopUpWindow(Context parentContext, View parentView){
+    public QuizPopUpWindow(Context parentContext, View parentView) {
         this.parentContext = parentContext;
         this.parentView = parentView;
     }
 
-    public void show(String header, String content, String ans1, String ans2, String ans3, String ans4, String correct){
+    public void show(String header, String content, String ans1, String ans2, String ans3, String ans4, String correct) {
         LayoutInflater inflater = (LayoutInflater) parentContext.getSystemService(LAYOUT_INFLATER_SERVICE);
 
-        View popUpView = inflater.inflate(R.layout.quiz_pop_up,null);
-        ((TextView)popUpView.findViewById(R.id.quizHeader)).setText(header);
-        ((TextView)popUpView.findViewById(R.id.quizQuestion)).setText(content);
+        View popUpView = inflater.inflate(R.layout.quiz_pop_up, null);
+        ((TextView) popUpView.findViewById(R.id.quizHeader)).setText(header);
+        ((TextView) popUpView.findViewById(R.id.quizQuestion)).setText(content);
 
-        final Button answer1 =popUpView.findViewById(R.id.answer1);
-        final Button answer2 =popUpView.findViewById(R.id.answer2);
-        final Button answer3 =popUpView.findViewById(R.id.answer3);
-        final Button answer4 =popUpView.findViewById(R.id.answer4);
+        final Button answer1 = popUpView.findViewById(R.id.answer1);
+        final Button answer2 = popUpView.findViewById(R.id.answer2);
+        final Button answer3 = popUpView.findViewById(R.id.answer3);
+        final Button answer4 = popUpView.findViewById(R.id.answer4);
 
         answer1.setText(ans1);
         answer1.setText(ans2);
@@ -55,40 +50,36 @@ public class QuizPopUpWindow {
         answer1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isCorrect1){
+                if (isCorrect1) {
                     answer1.setBackgroundColor(android.graphics.Color.GREEN);
-                }
-                else
+                } else
                     answer1.setBackgroundColor(android.graphics.Color.RED);
             }
         });
         answer2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isCorrect2){
+                if (isCorrect2) {
                     answer2.setBackgroundColor(android.graphics.Color.GREEN);
-                }
-                else
+                } else
                     answer2.setBackgroundColor(android.graphics.Color.RED);
             }
         });
         answer3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isCorrect3){
+                if (isCorrect3) {
                     answer3.setBackgroundColor(android.graphics.Color.GREEN);
-                }
-                else
+                } else
                     answer3.setBackgroundColor(android.graphics.Color.RED);
             }
         });
         answer4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isCorrect4){
+                if (isCorrect4) {
                     answer4.setBackgroundColor(android.graphics.Color.GREEN);
-                }
-                else
+                } else
                     answer4.setBackgroundColor(android.graphics.Color.RED);
             }
         });
@@ -99,7 +90,7 @@ public class QuizPopUpWindow {
                 ViewGroup.LayoutParams.WRAP_CONTENT
         );
 
-        if(Build.VERSION.SDK_INT>=21){
+        if (Build.VERSION.SDK_INT >= 21) {
             mPopupWindow.setElevation(5.0f);
 
         }
@@ -112,6 +103,6 @@ public class QuizPopUpWindow {
             }
         });
 
-        mPopupWindow.showAtLocation(parentView, Gravity.CENTER,0,0);
+        mPopupWindow.showAtLocation(parentView, Gravity.CENTER, 0, 0);
     }
 }

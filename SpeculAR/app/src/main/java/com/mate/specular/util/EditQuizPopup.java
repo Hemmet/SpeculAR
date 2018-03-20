@@ -2,8 +2,6 @@ package com.mate.specular.util;
 
 import android.content.Context;
 import android.os.Build;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,72 +10,78 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import com.mate.specular.R;
 import com.mate.specular.model.QuizData;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-/**
- * Created by mert on 20.03.18.
- */
-
 public class EditQuizPopup {
-    Context parentContext;
-    View parentView;
-    ImageButton closeButton;
+    private View parentView;
+    private ImageButton closeButton;
 
-    String headerStr="";
-    String contentStr="";
-    String correctStr="";
-    String ans1Str="";
-    String ans2Str="";
-    String ans3Str="";
-    String ans4Str="";
+    private PopupWindow mPopupWindow;
+    private View popUpView;
+    private RadioGroup rg;
 
-    Button ok;
+    private QuizData _quizData;
 
-    int correct =-1;
+    private String contentStr = "";
+    private String correctStr = "";
+    private String ans1Str = "";
+    private String ans2Str = "";
+    private String ans3Str = "";
+    private String ans4Str = "";
 
-    public EditQuizPopup(Context parentContext, View parentView){
-        this.parentContext = parentContext;
+    private int correct = -1;
+
+    public EditQuizPopup(Context parentContext, View parentView) {
         this.parentView = parentView;
-    }
 
-    public void show(){
         LayoutInflater inflater = (LayoutInflater) parentContext.getSystemService(LAYOUT_INFLATER_SERVICE);
 
-        View popUpView = inflater.inflate(R.layout.edit_quiz_popup,null);
+        popUpView = inflater.inflate(R.layout.edit_quiz_popup, null);
 
-        final PopupWindow mPopupWindow = new PopupWindow(
+        mPopupWindow = new PopupWindow(
                 popUpView,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
         );
 
+        rg = popUpView.findViewById(R.id.rdgroup);
+        rg.clearCheck();
 
-        final EditText answer1 =popUpView.findViewById(R.id.answer1Edit);
-        final EditText answer2 =popUpView.findViewById(R.id.answer2Edit);
-        final EditText answer3 =popUpView.findViewById(R.id.answer3Edit);
-        final EditText answer4 =popUpView.findViewById(R.id.answer4Edit);
+        RadioButton rb = (RadioButton) popUpView.findViewById(R.id.correct1);
+        rb.setChecked(true);
+    }
 
-        final EditText header =popUpView.findViewById(R.id.editQuizHeader);
-        final EditText content =popUpView.findViewById(R.id.quizQuestionEdit);
+    public void show(QuizData quizData) {
+        this._quizData = quizData;
 
-        ok =popUpView.findViewById(R.id.buttonDone);
-        final RadioGroup rg = popUpView.findViewById(R.id.rdgroup);
+        final EditText answer1 = (EditText) popUpView.findViewById(R.id.answer1Edit);
+        final EditText answer2 = (EditText) popUpView.findViewById(R.id.answer2Edit);
+        final EditText answer3 = (EditText) popUpView.findViewById(R.id.answer3Edit);
+        final EditText answer4 = (EditText) popUpView.findViewById(R.id.answer4Edit);
 
-        ok.setEnabled(false);
+        final EditText content = (EditText) popUpView.findViewById(R.id.quizQuestionEdit);
+
+        answer1.setText(quizData.getAns1());
+        answer2.setText(quizData.getAns2());
+        answer3.setText(quizData.getAns3());
+        answer4.setText(quizData.getAns4());
+
+        content.setText(quizData.getContent());
+
 
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                ok.setEnabled(true);
-                switch(i){
+                switch (i) {
                     case R.id.correct1:
-                       correct = 0;
+                        correct = 0;
                         break;
                     case R.id.correct2:
                         correct = 1;
@@ -92,58 +96,38 @@ public class EditQuizPopup {
             }
         });
 
-        ok.setOnClickListener(new View.OnClickListener() {
+        Button okButton = popUpView.findViewById(R.id.buttonDone);
+        okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ans1Str = answer1.getText().toString();
-                ans2Str = answer2.getText().toString();
-                ans3Str = answer3.getText().toString();
-                ans4Str = answer4.getText().toString();
+                _quizData.setAns1(answer1.getText().toString());
+                _quizData.setAns2(answer2.getText().toString());
+                _quizData.setAns3(answer3.getText().toString());
+                _quizData.setAns4(answer4.getText().toString());
 
-                headerStr = header.getText().toString();
-                contentStr = content.getText().toString();
+                _quizData.setContent(content.getText().toString());
 
-                switch(correct){
+                switch (correct) {
                     case 0:
-                        correctStr = answer1.getText().toString();
+                        _quizData.setCorrect(_quizData.getAns1());
                         break;
                     case 1:
-                        correctStr = answer2.getText().toString();
+                        _quizData.setCorrect(_quizData.getAns2());
                         break;
                     case 2:
-                        correctStr = answer3.getText().toString();
+                        _quizData.setCorrect(_quizData.getAns3());
                         break;
                     case 3:
-                        correctStr = answer4.getText().toString();
+                        _quizData.setCorrect(_quizData.getAns4());
                         break;
                 }
-                QuizData qd = new QuizData();
-                qd.setAns1(ans1Str);
-                qd.setAns2(ans2Str);
-                qd.setAns3(ans3Str);
-                qd.setAns4(ans4Str);
-                qd.setContent(contentStr);
-                qd.setCorrect(correctStr);
-                qd.setHeader(headerStr);
-
-                
-                /* *******************************************
-
-                ADD QD TO DATABASE
-
-
-                ************************************************ */
 
                 mPopupWindow.dismiss();
             }
-
-
         });
 
-
-        if(Build.VERSION.SDK_INT>=21){
+        if (Build.VERSION.SDK_INT >= 21) {
             mPopupWindow.setElevation(5.0f);
-
         }
 
         closeButton = (ImageButton) popUpView.findViewById(R.id.editQuizPopUpClose);
@@ -154,6 +138,14 @@ public class EditQuizPopup {
             }
         });
 
-        mPopupWindow.showAtLocation(parentView, Gravity.CENTER,0,0);
+        mPopupWindow.showAtLocation(parentView, Gravity.CENTER, 0, 0);
+    }
+
+    public PopupWindow getPopupWindow() {
+        return mPopupWindow;
+    }
+
+    public QuizData getQuizData() {
+        return _quizData;
     }
 }

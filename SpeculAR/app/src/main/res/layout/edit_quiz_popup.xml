@@ -5,7 +5,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="3dp"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <ImageButton
         android:id="@+id/editQuizPopUpClose"
@@ -17,20 +19,15 @@
         android:background="@null"/>
 
     <EditText
-        android:id="@+id/editQuizHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textAllCaps="true"/>
-
-    <EditText
         android:id="@+id/quizQuestionEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:padding="25sp"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
 
     <LinearLayout
         android:layout_below="@id/quizQuestionEdit"
@@ -43,10 +40,9 @@
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="3"
-            />
-        <LinearLayout
+            android:layout_weight="3"/>
 
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -56,20 +52,21 @@
                 android:id="@+id/answer1Edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="answer1" />
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
 
             <EditText
                 android:id="@+id/answer2Edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="answer2" />
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
         </LinearLayout>
 
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="2"
-            />
+            android:layout_weight="2"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -82,19 +79,20 @@
                 android:id="@+id/answer3Edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="answer3" />
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
 
             <EditText
                 android:id="@+id/answer4Edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="answer4" />
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
         </LinearLayout>
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_weight="2"
-            />
+            android:layout_weight="2"/>
 
     </LinearLayout>
 
@@ -102,55 +100,41 @@
         android:layout_below="@id/answerList"
         android:id="@+id/rdgroup"
         android:layout_marginTop="15dp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_centerInParent="true">
+
         <RadioButton android:id="@+id/correct1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Correct 1"
+            android:text="1"
             android:onClick="onRadioButtonClicked"/>
         <RadioButton android:id="@+id/correct2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Correct 2"
+            android:text="2"
             android:onClick="onRadioButtonClicked"/>
         <RadioButton android:id="@+id/correct3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Correct 3"
+            android:text="3"
             android:onClick="onRadioButtonClicked"/>
         <RadioButton android:id="@+id/correct4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Correct 4"
+            android:text="4"
             android:onClick="onRadioButtonClicked"/>
     </RadioGroup>
 
-    <LinearLayout
-        android:layout_below="@id/rdgroup"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/buttonDone"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="5">
+        android:layout_weight="1"
+        android:layout_marginTop="15dp"
+        android:text="OK"
+        android:layout_centerInParent="true"
+        android:layout_below="@id/rdgroup"/>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            />
-        <Button
-            android:id="@+id/buttonDone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginTop="15dp"
-            android:text="OK"
-            />
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            />
-    </LinearLayout>
 </RelativeLayout>
