@@ -7,6 +7,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -242,9 +243,41 @@ public class FrameProcess {
         return null;
     }
 
-    public static Mat detectColorDensity(Mat image){
+    public int detectColorDensity(Mat originalImage, int orientation){
+        Size imageSize = new Size();
+        imageSize = originalImage.size();
+        int iWidth = (int) imageSize.width;//1920
+        int iHeight = (int) imageSize.height;//1080
+        Mat image = new Mat();
+        Map<String, Integer> colorAreas = new HashMap<String, Integer>();
 
-        return new Mat();
+        //Imgproc.pyrDown(originalImage, image);
+        Imgproc.GaussianBlur(originalImage, image, new Size(3,3), 2, 2);
+        Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2HSV);
+
+        Mat tempImage = new Mat();
+        Rect roi = new Rect(0, 0, iWidth/2, iHeight/2);
+        tempImage = new Mat(image, roi);
+        int cSize = 0;
+        for(Map.Entry<String, List<Integer>> hValue : colorHueCodes.entrySet()){
+            String colorCode = hValue.getKey();
+            List<Integer> thresholdValues = hValue.getValue();
+            tempImage = thresholdHue(tempImage, thresholdValues.get(0), thresholdValues.get(1), thresholdValues.get(2), thresholdValues.get(3));
+            cSize = hsvColorAreaDetect(tempImage);
+            colorAreas.put(colorCode, cSize);
+        }
+        return cSize;
+    }
+
+    public static int hsvColorAreaDetect(Mat mask){
+        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Imgproc.findContours(mask, contours, new Mat(), Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        int totalArea = 0;
+        for (int idx = 0; idx != contours.size(); ++idx){
+            Mat contour = contours.get(idx);
+            totalArea += (int) Imgproc.contourArea(contour);
+        }
+        return totalArea;
     }
 
     public static void initializColorHashMap(Map<String, List<Integer>> colorHueCodes){
