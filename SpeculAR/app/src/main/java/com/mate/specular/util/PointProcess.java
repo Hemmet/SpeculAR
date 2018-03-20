@@ -63,4 +63,10 @@ public class PointProcess {
 
         return new MatOfPoint2f(points.toArray(new Point[points.size()]));
     }
+    public static MatOfPoint2f createReferenceMatrixOneByOne(ObjectModel object){
+        List<Point> points = new ArrayList<>();
+        points.add(new Point(object.getX_coord(),object.getY_coord()));
+
+        return new MatOfPoint2f(points.toArray(new Point[points.size()]));
+    }
 }

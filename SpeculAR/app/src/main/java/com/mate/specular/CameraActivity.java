@@ -19,6 +19,7 @@ import com.mate.specular.model.Circle;
 import com.mate.specular.model.Color;
 import com.mate.specular.model.Frame;
 import com.mate.specular.model.InfoButton;
+import com.mate.specular.model.ObjectModel;
 import com.mate.specular.util.FrameFinder;
 import com.mate.specular.util.FrameProcess;
 import com.mate.specular.util.PointProcess;
@@ -152,15 +153,6 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                clearButtonsFromView();
-                clearButtonList();
-            }
-        });
-
         Mat image = inputFrame.rgba();
         circleCoordinates = frameProcessor.detectColor(image);
         //Debug amaciyla kullanilan for
@@ -173,37 +165,48 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Log.i(TAG,pointOrders+"");
         //Mat retMat = drawInfo(image/*detectColor(image)*/, 90,90,90,0,0,300,250);
 
-        MatOfPoint2f objectRefs;
-        MatOfPoint2f curObjects = null;
+        MatOfPoint2f objectRef;
+        MatOfPoint2f curObject = null;
 
         if(pointOrders != null) {
             currentFrame = FrameFinder.findFrameWith(stringOrderToColorList(pointOrders));
             if(currentFrame != null){
-                Mat homographyMat = PointProcess.fındHomography(currentFrame.getCircles(), FrameProcess.currentCircles);
-                objectRefs = PointProcess.createReferenceMatrix(currentFrame);
-                curObjects = PointProcess.applyHomography(objectRefs, homographyMat);
-                List<Point> points = curObjects.toList();
 
-                for(Point point : points){
-                    final InfoButton i = new InfoButton(this,"a","b");
-                    i.setX((float) point.x);
-                    i.setY((float) point.y);
-                    ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-                    i.setLayoutParams(lp);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            constraintLayout.addView(i);
-                            buttonList.add(i);
-                            i.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    final PopUpWindow popup = new PopUpWindow(activityContext, findViewById(R.id.camera_view_layout));
-                                    popup.show(i.getHeader() ,i.getInfo());
-                                }
-                            });
-                        }
-                    });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        clearButtonsFromView();
+                        clearButtonList();
+                    }
+                });
+
+                Mat homographyMat = PointProcess.fındHomography(currentFrame.getCircles(), FrameProcess.currentCircles);
+
+                for(ObjectModel object : currentFrame.getObjects()){
+                    objectRef = PointProcess.createReferenceMatrixOneByOne(object);
+                    curObject = PointProcess.applyHomography(objectRef, homographyMat);
+                    List<Point> points = curObject.toList();
+                    for(Point point : points){
+                        final InfoButton i = new InfoButton(this,object.getTitle(),object.getInfo());
+                        i.setX((float) point.x);
+                        i.setY((float) point.y);
+                        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                        i.setLayoutParams(lp);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                constraintLayout.addView(i);
+                                buttonList.add(i);
+                                i.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        final PopUpWindow popup = new PopUpWindow(activityContext, findViewById(R.id.camera_view_layout));
+                                        popup.show(i.getHeader() ,i.getInfo());
+                                    }
+                                });
+                            }
+                        });
+                    }
                 }
             }
         }
