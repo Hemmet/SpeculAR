@@ -12,6 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ImageView
+        android:id="@+id/trashCan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/trash_can"
+        android:background="@android:color/transparent"
+        android:layout_alignParentRight="true"
+        android:layout_above="@id/addOkImageButton"/>
+
     <ImageButton
         android:id="@+id/addOkImageButton"
         android:layout_width="wrap_content"

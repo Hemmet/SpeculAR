@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 public class CreateModelActivity extends Activity {
     private ImageView backgroundImageView;
+    private ImageView trashCanImageView;
     private RelativeLayout relativeLayout;
     private ArrayList<InfoButton> newInfoTagList;
     private ArrayList<QuizButton> newQuizTagList;
@@ -47,6 +48,7 @@ public class CreateModelActivity extends Activity {
 
         relativeLayout = (RelativeLayout) findViewById(R.id.createModelLayout);
         backgroundImageView = (ImageView) findViewById(R.id.backgroundImageView);
+        trashCanImageView = (ImageView) findViewById(R.id.trashCan);
         putImage();
 
         ImageButton addInfoTag = (ImageButton) findViewById(R.id.addInfoTagImageButton);
@@ -100,9 +102,16 @@ public class CreateModelActivity extends Activity {
                         case MotionEvent.ACTION_MOVE:
                         case MotionEvent.ACTION_UP:
                             float halfImageWidth = 75.0f;
-                            if (newInfoTag.getX() - (motionEvent.getRawX() - halfImageWidth) > 10 || newInfoTag.getY() - (motionEvent.getRawY() - halfImageWidth) > 10) {
-                                newInfoTag.setX(motionEvent.getRawX() - halfImageWidth);
-                                newInfoTag.setY(motionEvent.getRawY() - halfImageWidth);
+                            newInfoTag.setX(motionEvent.getRawX() - halfImageWidth);
+                            newInfoTag.setY(motionEvent.getRawY() - halfImageWidth);
+
+                            int trashCanWidth = 80;
+                            float xdiff = newInfoTag.getX() - trashCanImageView.getX();
+                            float ydiff = newInfoTag.getY() - trashCanImageView.getY();
+
+                            if(xdiff > 0 && xdiff < trashCanWidth && ydiff > 0 && ydiff < trashCanWidth ) {
+                                newInfoTag.setEnabled(false);
+                                newInfoTag.setVisibility(View.GONE);
                             }
                     }
                 }
@@ -144,9 +153,16 @@ public class CreateModelActivity extends Activity {
                         case MotionEvent.ACTION_MOVE:
                         case MotionEvent.ACTION_UP:
                             float halfImageWidth = 75.0f;
-                            if (newQuizTag.getX() - (motionEvent.getRawX() - halfImageWidth) > 10 || newQuizTag.getY() - (motionEvent.getRawY() - halfImageWidth) > 10) {
-                                newQuizTag.setX(motionEvent.getRawX() - halfImageWidth);
-                                newQuizTag.setY(motionEvent.getRawY() - halfImageWidth);
+                            newQuizTag.setX(motionEvent.getRawX() - halfImageWidth);
+                            newQuizTag.setY(motionEvent.getRawY() - halfImageWidth);
+
+                            int trashCanWidth = 80;
+                            float xdiff = newQuizTag.getX() - trashCanImageView.getX();
+                            float ydiff = newQuizTag.getY() - trashCanImageView.getY();
+
+                            if(xdiff > 0 && xdiff < trashCanWidth && ydiff > 0 && ydiff < trashCanWidth ) {
+                                newQuizTag.setEnabled(false);
+                                newQuizTag.setVisibility(View.GONE);
                             }
                     }
                 }
