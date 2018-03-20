@@ -7,25 +7,30 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
 import com.mate.specular.model.InfoButton;
 import com.mate.specular.model.QuizButton;
+import com.mate.specular.util.EditQuizPopup;
+import com.mate.specular.util.EditableInfoPopUp;
 
 import java.util.ArrayList;
 
 
 public class CreateModelActivity extends Activity {
-    ImageView backgroundImageView;
-    RelativeLayout relativeLayout;
-    ArrayList<InfoButton> newInfoTagList;
-    ArrayList<QuizButton> newQuizTagList;
-    Context context;
-    DisplayMetrics metrics;
+    private ImageView backgroundImageView;
+    private RelativeLayout relativeLayout;
+    private ArrayList<InfoButton> newInfoTagList;
+    private ArrayList<QuizButton> newQuizTagList;
+    private Context context;
+    private DisplayMetrics metrics;
+    private GestureDetector gestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +40,11 @@ public class CreateModelActivity extends Activity {
         context = this;
         metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
+        gestureDetector = new GestureDetector(this, new SingleTapConfirm());
         newInfoTagList = new ArrayList<InfoButton>();
         newQuizTagList = new ArrayList<QuizButton>();
-        relativeLayout = (RelativeLayout)findViewById(R.id.createModelLayout);
+
+        relativeLayout = (RelativeLayout) findViewById(R.id.createModelLayout);
         backgroundImageView = (ImageView) findViewById(R.id.backgroundImageView);
         putImage();
 
@@ -73,7 +79,9 @@ public class CreateModelActivity extends Activity {
     }
 
     private InfoButton createInfoTag() {
-        final InfoButton newInfoTag =  new InfoButton(context, "Put info here", "Put header here");
+        final EditableInfoPopUp popup = new EditableInfoPopUp(context, relativeLayout);
+
+        final InfoButton newInfoTag = new InfoButton(context, "Information", "Header");
         newInfoTag.setY(metrics.heightPixels / 2);
         newInfoTag.setX(metrics.widthPixels / 2);
         newInfoTag.setImageResource(R.drawable.info_tag_black);
@@ -83,14 +91,29 @@ public class CreateModelActivity extends Activity {
         newInfoTag.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                    case MotionEvent.ACTION_MOVE:
-                    case MotionEvent.ACTION_UP:
-                        newInfoTag.setX(motionEvent.getRawX());
-                        newInfoTag.setY(motionEvent.getRawY());
+                if (gestureDetector.onTouchEvent(motionEvent)) { // Single tap
+                    popup.show(newInfoTag.getHeader(), newInfoTag.getInfo());
+                } else {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                        case MotionEvent.ACTION_MOVE:
+                        case MotionEvent.ACTION_UP:
+                            float halfImageWidth = 75.0f;
+                            if (newInfoTag.getX() - (motionEvent.getRawX() - halfImageWidth) > 10 || newInfoTag.getY() - (motionEvent.getRawY() - halfImageWidth) > 10) {
+                                newInfoTag.setX(motionEvent.getRawX() - halfImageWidth);
+                                newInfoTag.setY(motionEvent.getRawY() - halfImageWidth);
+                            }
+                    }
                 }
                 return true;
+            }
+        });
+
+        popup.getPopupWindow().setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                newInfoTag.setHeader(popup.getHeader());
+                newInfoTag.setInfo(popup.getContent());
             }
         });
 
@@ -98,12 +121,14 @@ public class CreateModelActivity extends Activity {
     }
 
     private QuizButton createQuizTag() {
+        final EditQuizPopup popup = new EditQuizPopup(context, relativeLayout);
+
         ArrayList<String> options = new ArrayList<String>();
         options.add("Option 1");
         options.add("Option 2");
         options.add("Option 3");
         options.add("Option 4");
-        final QuizButton newQuizTag =  new QuizButton(context, options,"Put question here");
+        final QuizButton newQuizTag = new QuizButton(context, options, "Question");
         newQuizTag.setY(metrics.heightPixels / 2);
         newQuizTag.setX(metrics.widthPixels / 2);
         newQuizTag.setImageResource(R.drawable.quiz_tag_black);
@@ -113,12 +138,16 @@ public class CreateModelActivity extends Activity {
         newQuizTag.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                switch (motionEvent.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                    case MotionEvent.ACTION_MOVE:
-                    case MotionEvent.ACTION_UP:
-                        newQuizTag.setX(motionEvent.getRawX());
-                        newQuizTag.setY(motionEvent.getRawY());
+                if (gestureDetector.onTouchEvent(motionEvent)) { // Single tap
+                    popup.show();
+                } else {
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                        case MotionEvent.ACTION_MOVE:
+                        case MotionEvent.ACTION_UP:
+                            newQuizTag.setX(motionEvent.getRawX());
+                            newQuizTag.setY(motionEvent.getRawY());
+                    }
                 }
                 return true;
             }
@@ -127,9 +156,16 @@ public class CreateModelActivity extends Activity {
         return newQuizTag;
     }
 
-    public void putImage(){
+    public void putImage() {
         byte[] byteArray = getIntent().getByteArrayExtra("image");
         Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         backgroundImageView.setImageBitmap(bitmap);
+    }
+
+    private class SingleTapConfirm extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onSingleTapUp(MotionEvent event) {
+            return true;
+        }
     }
 }

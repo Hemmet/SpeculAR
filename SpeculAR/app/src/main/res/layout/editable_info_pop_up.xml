@@ -5,14 +5,17 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="3dp"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <ImageButton
         android:id="@+id/editablePopUpCloseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/close_icon"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:background="@null"/>
 
@@ -21,14 +24,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:textAllCaps="true"/>
+        android:inputType="text"
+        android:layout_centerInParent="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_below="@id/editablePopUpCloseButton"/>
 
     <EditText
         android:id="@+id/editablePopUpContentEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
+        android:inputType="text"
         android:layout_centerInParent="true"
-        android:padding="25sp"/>
+        android:padding="25sp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_below="@id/editablePopUpHeaderEditText"/>
+
+    <Button
+        android:id="@+id/editablePopUpOkButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="OK"
+        android:layout_below="@id/editablePopUpContentEditText"/>
 
 </RelativeLayout>
