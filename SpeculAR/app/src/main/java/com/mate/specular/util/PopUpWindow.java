@@ -14,7 +14,15 @@ import com.mate.specular.R;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-/*Example usage:
+
+/**Example usage:
+ *
+ *       final PopUpWindow popup = new PopUpWindow(context, layout);
+ *       popup.show("vase" ,"You can put flowers in it.");
+ *
+ * */
+
+/*Example usage 2:
 *
 *        final PopUpWindow popup = new PopUpWindow(getApplicationContext(), findViewById(R.id.cameraLayout));
 *        Button mButton = (Button) findViewById(R.id.popUpButton);
