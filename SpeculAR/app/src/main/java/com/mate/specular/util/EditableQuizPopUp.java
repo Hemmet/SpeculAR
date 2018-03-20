@@ -18,7 +18,7 @@ import com.mate.specular.model.QuizData;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-public class EditQuizPopup {
+public class EditableQuizPopUp {
     private View parentView;
     private ImageButton closeButton;
 
@@ -37,12 +37,12 @@ public class EditQuizPopup {
 
     private int correct = -1;
 
-    public EditQuizPopup(Context parentContext, View parentView) {
+    public EditableQuizPopUp(Context parentContext, View parentView) {
         this.parentView = parentView;
 
         LayoutInflater inflater = (LayoutInflater) parentContext.getSystemService(LAYOUT_INFLATER_SERVICE);
 
-        popUpView = inflater.inflate(R.layout.edit_quiz_popup, null);
+        popUpView = inflater.inflate(R.layout.editable_quiz_pop_up, null);
 
         mPopupWindow = new PopupWindow(
                 popUpView,
