@@ -243,7 +243,9 @@ public class FrameProcess {
         return null;
     }
 
-    public int detectColorDensity(Mat originalImage, int orientation){
+    public String detectColorDensity(Mat originalImage, int orientation){
+        String colorOrder = "";
+
         Size imageSize = new Size();
         imageSize = originalImage.size();
         int iWidth = (int) imageSize.width;//1920
@@ -255,18 +257,52 @@ public class FrameProcess {
         Imgproc.GaussianBlur(originalImage, image, new Size(3,3), 2, 2);
         Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2HSV);
 
-        Mat tempImage = new Mat();
+        //Solust icin(Landscape e gore)
         Rect roi = new Rect(0, 0, iWidth/2, iHeight/2);
-        tempImage = new Mat(image, roi);
+        colorOrder += densityOfRect(image, roi);
+
+        //Sagust icin(Landscape e gore)
+        roi = new Rect(iWidth/2, 0, iWidth/2, iHeight/2);
+        colorOrder += densityOfRect(image, roi);
+
+        //Solalt icin(Landscape e gore)
+        roi = new Rect(0, iHeight/2, iWidth/2, iHeight/2);
+        colorOrder += densityOfRect(image, roi);
+
+        //Sagalt icin(Landscape e gore)
+        roi = new Rect(iWidth/2, iHeight/2, iWidth/2, iHeight/2);
+        colorOrder += densityOfRect(image, roi);
+
+        return colorOrder;
+    }
+
+    public String densityOfRect(Mat image, Rect roi){
+        Mat tempImage = new Mat(image, roi);
+        Map<String, Integer> colorAreas = new HashMap<String, Integer>();
         int cSize = 0;
         for(Map.Entry<String, List<Integer>> hValue : colorHueCodes.entrySet()){
             String colorCode = hValue.getKey();
             List<Integer> thresholdValues = hValue.getValue();
-            tempImage = thresholdHue(tempImage, thresholdValues.get(0), thresholdValues.get(1), thresholdValues.get(2), thresholdValues.get(3));
-            cSize = hsvColorAreaDetect(tempImage);
+            Mat mask = thresholdHue(tempImage, thresholdValues.get(0), thresholdValues.get(1), thresholdValues.get(2), thresholdValues.get(3));
+            cSize = hsvColorAreaDetect(mask);
             colorAreas.put(colorCode, cSize);
         }
-        return cSize;
+        return calculateMax(colorAreas);
+    }
+
+    public static String calculateMax(Map<String, Integer> colorArea){
+        int maxArea = -1;
+        String color = "";
+        for(Map.Entry<String, Integer> area : colorArea.entrySet()){
+            if(area.getValue() > maxArea && area.getValue() > 75){
+                maxArea = area.getValue();
+                color = area.getKey();
+            }
+        }
+        if(color.equalsIgnoreCase("")){
+            color = "X";
+        }
+        return color;
     }
 
     public static int hsvColorAreaDetect(Mat mask){

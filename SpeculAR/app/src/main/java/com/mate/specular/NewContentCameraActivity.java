@@ -30,12 +30,18 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class NewContentCameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2, SensorEventListener{
@@ -116,14 +122,21 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
                 processWaitDialog = builder.create();
                 processWaitDialog.show();
 
-                //image uzerinde renk yogunlugu hesapla
+                String colorDensity = preprocessFrame();
 
                 processWaitDialog.dismiss();
 
+                captureButton.setVisibility(View.INVISIBLE);
                 String colorOrder = "";//TODO ColorOrderUnique gelen alinacak
                 showColorOrderAlert(colorOrder);
             }
         });
+    }
+
+    private String preprocessFrame() {
+        String densityOrder = frameProcessor.detectColorDensity(image, screenOrien);
+        Log.i(TAG, densityOrder + " XXX");
+        return frameProcessor.detectColorDensity(image, screenOrien);
     }
 
     @Override
@@ -169,6 +182,10 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         image = inputFrame.rgba();
         circleCoordinates = frameProcessor.detectColor(image);
         String colorOrder = frameProcessor.pointOrder(screenOrien, circleCoordinates);
+        for(Map.Entry<String, Circle> circle : circleCoordinates.entrySet()){
+            Point center = new Point(circle.getValue().getX_coord(), circle.getValue().getY_coord());
+            Imgproc.circle(image, center, (int) circle.getValue().getRadius(), new Scalar(127, 255, 212), 3);
+        }
         //Log.i(TAG, colorOrder+"");
 
         //TODO color order check islemi degisecek capture butonunun onClickinde set edilecek
