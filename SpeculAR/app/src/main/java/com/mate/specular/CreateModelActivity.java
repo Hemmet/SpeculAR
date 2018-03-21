@@ -15,13 +15,19 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 
+import com.mate.specular.database.MockDB;
+import com.mate.specular.model.Circle;
+import com.mate.specular.model.Frame;
 import com.mate.specular.model.InfoButton;
+import com.mate.specular.model.InfoObjectModel;
+import com.mate.specular.model.ObjectModel;
 import com.mate.specular.model.QuizButton;
 import com.mate.specular.model.QuizObjectModel;
 import com.mate.specular.util.EditableQuizPopUp;
 import com.mate.specular.util.EditableInfoPopUp;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class CreateModelActivity extends Activity {
@@ -75,8 +81,21 @@ public class CreateModelActivity extends Activity {
         okImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TO DO
-                //Tag ler database e kaydedilecek
+                List<ObjectModel> objects = new ArrayList<>();
+
+                for (InfoButton button : newInfoTagList) {
+                    InfoObjectModel newObject = new InfoObjectModel(button.getHeader(), button.getInfo(), button.getX(), button.getY());
+                    objects.add(newObject);
+                }
+                
+                for (QuizButton button : newQuizTagList) {
+                    QuizObjectModel newObject = button.getQuizObjectModel();
+                    newObject.setX_coord(button.getX());
+                    newObject.setY_coord(button.getY());
+                    objects.add(newObject);
+                }
+
+                MockDB.insertFrame(new Frame(objects, new Circle[4]));
             }
         });
     }
@@ -109,7 +128,7 @@ public class CreateModelActivity extends Activity {
                             float xdiff = newInfoTag.getX() - trashCanImageView.getX();
                             float ydiff = newInfoTag.getY() - trashCanImageView.getY();
 
-                            if(xdiff > 0 && xdiff < trashCanWidth && ydiff > 0 && ydiff < trashCanWidth ) {
+                            if (xdiff > 0 && xdiff < trashCanWidth && ydiff > 0 && ydiff < trashCanWidth) {
                                 newInfoTag.setEnabled(false);
                                 newInfoTag.setVisibility(View.GONE);
                             }
@@ -160,7 +179,7 @@ public class CreateModelActivity extends Activity {
                             float xdiff = newQuizTag.getX() - trashCanImageView.getX();
                             float ydiff = newQuizTag.getY() - trashCanImageView.getY();
 
-                            if(xdiff > 0 && xdiff < trashCanWidth && ydiff > 0 && ydiff < trashCanWidth ) {
+                            if (xdiff > 0 && xdiff < trashCanWidth && ydiff > 0 && ydiff < trashCanWidth) {
                                 newQuizTag.setEnabled(false);
                                 newQuizTag.setVisibility(View.GONE);
                             }
