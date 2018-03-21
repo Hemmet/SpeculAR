@@ -1,14 +1,16 @@
 package com.mate.specular.model;
 
-public class QuizData {
-    String content;
-    String ans1;
-    String ans2;
-    String ans3;
-    String ans4;
-    String correct;
+public class QuizObjectModel implements ObjectModel {
+    private String content;
+    private String ans1;
+    private String ans2;
+    private String ans3;
+    private String ans4;
+    private String correct;
+    private double x_coord;
+    private double y_coord;
 
-    public QuizData(String content, String ans1, String ans2, String ans3, String ans4, String correct){
+    public QuizObjectModel(String content, String ans1, String ans2, String ans3, String ans4, String correct) {
         this.content = content;
         this.ans1 = ans1;
         this.ans2 = ans2;
@@ -65,5 +67,24 @@ public class QuizData {
         this.correct = correct;
     }
 
+    @Override
+    public double getX_coord() {
+        return x_coord;
+    }
+
+    @Override
+    public void setX_coord(double x_coord) {
+        this.x_coord = x_coord;
+    }
+
+    @Override
+    public double getY_coord() {
+        return y_coord;
+    }
+
+    @Override
+    public void setY_coord(double y_coord) {
+        this.y_coord = y_coord;
+    }
 
 }

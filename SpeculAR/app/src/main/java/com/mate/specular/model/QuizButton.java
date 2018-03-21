@@ -4,18 +4,18 @@ import android.content.Context;
 import android.support.v7.widget.AppCompatImageButton;
 
 public class QuizButton extends AppCompatImageButton {
-    private QuizData quizData;
+    private QuizObjectModel quizObjectModel;
 
-    public QuizButton(Context context, QuizData quizData) {
+    public QuizButton(Context context, QuizObjectModel quizObjectModel) {
         super(context);
-        this.quizData = quizData;
+        this.quizObjectModel = quizObjectModel;
     }
 
-    public QuizData getQuizData() {
-        return quizData;
+    public QuizObjectModel getQuizObjectModel() {
+        return quizObjectModel;
     }
 
-    public void setQuizData(QuizData quizData) {
-        this.quizData = quizData;
+    public void setQuizObjectModel(QuizObjectModel quizObjectModel) {
+        this.quizObjectModel = quizObjectModel;
     }
 }

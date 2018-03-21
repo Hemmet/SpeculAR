@@ -1,7 +1,6 @@
 package com.mate.specular;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
@@ -21,8 +19,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mate.specular.model.Place;
-import com.mate.specular.model.QuizData;
-import com.mate.specular.util.EditableQuizPopUp;
 import com.mate.specular.util.PopUpWindow;
 
 import java.util.ArrayList;

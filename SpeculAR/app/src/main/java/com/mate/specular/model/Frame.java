@@ -14,7 +14,7 @@ public class Frame {
      * @param  objects list of objects that are inside the frame
      * @param  circles array of circles with size of 4 ,
      *                that are located at top-left, top-right, bottom-left, bottom-right of the frame
-     * @see         ObjectModel
+     * @see         InfoObjectModel
      * @see         Circle
      */
     public Frame(List<ObjectModel> objects, Circle[] circles) {
@@ -31,7 +31,7 @@ public class Frame {
 
     /**
      * @return list of objects that are inside the frame
-     * @see         ObjectModel
+     * @see         InfoObjectModel
      */
     public List<ObjectModel> getObjects() {
         return objects;
@@ -40,7 +40,7 @@ public class Frame {
      * Sets
      *
      * @param  objects list of objects that are inside the frame
-     * @see         ObjectModel
+     * @see         InfoObjectModel
      */
     public void setObjects(List<ObjectModel> objects) {
         this.objects = objects;

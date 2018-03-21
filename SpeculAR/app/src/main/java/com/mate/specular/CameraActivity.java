@@ -19,6 +19,7 @@ import com.mate.specular.model.Circle;
 import com.mate.specular.model.Color;
 import com.mate.specular.model.Frame;
 import com.mate.specular.model.InfoButton;
+import com.mate.specular.model.InfoObjectModel;
 import com.mate.specular.model.ObjectModel;
 import com.mate.specular.util.FrameFinder;
 import com.mate.specular.util.FrameProcess;
@@ -36,7 +37,6 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
@@ -182,30 +182,35 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
                 Mat homographyMat = PointProcess.fındHomography(currentFrame.getCircles(), FrameProcess.currentCircles);
 
-                for(ObjectModel object : currentFrame.getObjects()){
-                    objectRef = PointProcess.createReferenceMatrixOneByOne(object);
-                    curObject = PointProcess.applyHomography(objectRef, homographyMat);
-                    List<Point> points = curObject.toList();
-                    for(Point point : points){
-                        final InfoButton i = new InfoButton(this,object.getTitle(),object.getInfo());
-                        i.setX((float) point.x);
-                        i.setY((float) point.y);
-                        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
-                        i.setLayoutParams(lp);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                constraintLayout.addView(i);
-                                buttonList.add(i);
-                                i.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        final PopUpWindow popup = new PopUpWindow(activityContext, findViewById(R.id.camera_view_layout));
-                                        popup.show(i.getHeader() ,i.getInfo());
-                                    }
-                                });
-                            }
-                        });
+                for(ObjectModel obj : currentFrame.getObjects()){
+                    if(obj.getClass() == InfoObjectModel.class) {
+                        InfoObjectModel object = (InfoObjectModel) obj;
+                        objectRef = PointProcess.createReferenceMatrixOneByOne(object);
+                        curObject = PointProcess.applyHomography(objectRef, homographyMat);
+                        List<Point> points = curObject.toList();
+                        for (Point point : points) {
+                            final InfoButton i = new InfoButton(this, object.getTitle(), object.getInfo());
+                            i.setX((float) point.x);
+                            i.setY((float) point.y);
+                            ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
+                            i.setLayoutParams(lp);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    constraintLayout.addView(i);
+                                    buttonList.add(i);
+                                    i.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            final PopUpWindow popup = new PopUpWindow(activityContext, findViewById(R.id.camera_view_layout));
+                                            popup.show(i.getHeader(), i.getInfo());
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    } else { // QuizObjectModel
+
                     }
                 }
             }

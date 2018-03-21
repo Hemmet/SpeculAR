@@ -17,7 +17,7 @@ import android.widget.RelativeLayout;
 
 import com.mate.specular.model.InfoButton;
 import com.mate.specular.model.QuizButton;
-import com.mate.specular.model.QuizData;
+import com.mate.specular.model.QuizObjectModel;
 import com.mate.specular.util.EditableQuizPopUp;
 import com.mate.specular.util.EditableInfoPopUp;
 
@@ -133,9 +133,9 @@ public class CreateModelActivity extends Activity {
     private QuizButton createQuizTag() {
         final EditableQuizPopUp popup = new EditableQuizPopUp(context, relativeLayout);
 
-        final QuizData quizData = new QuizData("Question", "Option 1", "Option 2", "Option 3", "Option 4", "1");
+        final QuizObjectModel quizObjectModel = new QuizObjectModel("Question", "Option 1", "Option 2", "Option 3", "Option 4", "1");
 
-        final QuizButton newQuizTag = new QuizButton(context, quizData);
+        final QuizButton newQuizTag = new QuizButton(context, quizObjectModel);
         newQuizTag.setY(metrics.heightPixels / 2);
         newQuizTag.setX(metrics.widthPixels / 2);
         newQuizTag.setImageResource(R.drawable.quiz_tag_black);
@@ -146,7 +146,7 @@ public class CreateModelActivity extends Activity {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (gestureDetector.onTouchEvent(motionEvent)) { // Single tap
-                    popup.show(newQuizTag.getQuizData());
+                    popup.show(newQuizTag.getQuizObjectModel());
                 } else {
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
@@ -173,7 +173,7 @@ public class CreateModelActivity extends Activity {
         popup.getPopupWindow().setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
-                newQuizTag.setQuizData(popup.getQuizData());
+                newQuizTag.setQuizObjectModel(popup.getQuizData());
             }
         });
 

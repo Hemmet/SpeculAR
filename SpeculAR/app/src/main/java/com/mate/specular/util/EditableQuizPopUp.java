@@ -14,7 +14,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.mate.specular.R;
-import com.mate.specular.model.QuizData;
+import com.mate.specular.model.QuizObjectModel;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
@@ -27,7 +27,7 @@ public class EditableQuizPopUp {
     private RadioGroup rg;
     private RadioButton rb;
 
-    private QuizData _quizData;
+    private QuizObjectModel _quizObjectModel;
 
     private String contentStr = "";
     private String correctStr = "";
@@ -57,8 +57,8 @@ public class EditableQuizPopUp {
         rb.setChecked(true);
     }
 
-    public void show(QuizData quizData) {
-        this._quizData = quizData;
+    public void show(QuizObjectModel quizObjectModel) {
+        this._quizObjectModel = quizObjectModel;
 
         final EditText answer1 = (EditText) popUpView.findViewById(R.id.answer1Edit);
         final EditText answer2 = (EditText) popUpView.findViewById(R.id.answer2Edit);
@@ -67,39 +67,39 @@ public class EditableQuizPopUp {
 
         final EditText content = (EditText) popUpView.findViewById(R.id.quizQuestionEdit);
 
-        answer1.setText(quizData.getAns1());
-        answer2.setText(quizData.getAns2());
-        answer3.setText(quizData.getAns3());
-        answer4.setText(quizData.getAns4());
+        answer1.setText(quizObjectModel.getAns1());
+        answer2.setText(quizObjectModel.getAns2());
+        answer3.setText(quizObjectModel.getAns3());
+        answer4.setText(quizObjectModel.getAns4());
 
-        content.setText(quizData.getContent());
+        content.setText(quizObjectModel.getContent());
 
 
         Button okButton = popUpView.findViewById(R.id.buttonDone);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                _quizData.setAns1(answer1.getText().toString());
-                _quizData.setAns2(answer2.getText().toString());
-                _quizData.setAns3(answer3.getText().toString());
-                _quizData.setAns4(answer4.getText().toString());
+                _quizObjectModel.setAns1(answer1.getText().toString());
+                _quizObjectModel.setAns2(answer2.getText().toString());
+                _quizObjectModel.setAns3(answer3.getText().toString());
+                _quizObjectModel.setAns4(answer4.getText().toString());
 
-                _quizData.setContent(content.getText().toString());
+                _quizObjectModel.setContent(content.getText().toString());
 
                 int selected = rg.getCheckedRadioButtonId();
                 rb = popUpView.findViewById(selected);
                 switch (rb.getText().toString()) {
                     case "0":
-                        _quizData.setCorrect(_quizData.getAns1());
+                        _quizObjectModel.setCorrect(_quizObjectModel.getAns1());
                         break;
                     case "1":
-                        _quizData.setCorrect(_quizData.getAns2());
+                        _quizObjectModel.setCorrect(_quizObjectModel.getAns2());
                         break;
                     case "2":
-                        _quizData.setCorrect(_quizData.getAns3());
+                        _quizObjectModel.setCorrect(_quizObjectModel.getAns3());
                         break;
                     case "3":
-                        _quizData.setCorrect(_quizData.getAns4());
+                        _quizObjectModel.setCorrect(_quizObjectModel.getAns4());
                         break;
                 }
 
@@ -126,7 +126,7 @@ public class EditableQuizPopUp {
         return mPopupWindow;
     }
 
-    public QuizData getQuizData() {
-        return _quizData;
+    public QuizObjectModel getQuizData() {
+        return _quizObjectModel;
     }
 }
