@@ -1,6 +1,7 @@
 package com.mate.specular;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mate.specular.model.Place;
+import com.mate.specular.model.QuizData;
+import com.mate.specular.util.EditableQuizPopUp;
 import com.mate.specular.util.PopUpWindow;
 
 import java.util.ArrayList;
@@ -33,13 +36,10 @@ public class PlaceListActivity extends AppCompatActivity {
     private String userID;
     private Button addPlaceButton, logoutButton;
     Bundle extras;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_place_list);
-
         placeList = FirebaseDatabase.getInstance().getReference("users/");
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         placeView = findViewById(R.id.placeListView);

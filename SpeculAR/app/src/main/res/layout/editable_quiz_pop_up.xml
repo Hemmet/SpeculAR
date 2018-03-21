@@ -108,23 +108,19 @@
         <RadioButton android:id="@+id/correct1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1"
-            android:onClick="onRadioButtonClicked"/>
+            android:text="1" />
         <RadioButton android:id="@+id/correct2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2"
-            android:onClick="onRadioButtonClicked"/>
+            android:text="2" />
         <RadioButton android:id="@+id/correct3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="3"
-            android:onClick="onRadioButtonClicked"/>
+            android:text="3" />
         <RadioButton android:id="@+id/correct4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="4"
-            android:onClick="onRadioButtonClicked"/>
+            android:text="4" />
     </RadioGroup>
 
     <Button

@@ -25,6 +25,7 @@ public class EditableQuizPopUp {
     private PopupWindow mPopupWindow;
     private View popUpView;
     private RadioGroup rg;
+    private RadioButton rb;
 
     private QuizData _quizData;
 
@@ -34,8 +35,6 @@ public class EditableQuizPopUp {
     private String ans2Str = "";
     private String ans3Str = "";
     private String ans4Str = "";
-
-    private int correct = -1;
 
     public EditableQuizPopUp(Context parentContext, View parentView) {
         this.parentView = parentView;
@@ -76,26 +75,6 @@ public class EditableQuizPopUp {
         content.setText(quizData.getContent());
 
 
-        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch (i) {
-                    case R.id.correct1:
-                        correct = 0;
-                        break;
-                    case R.id.correct2:
-                        correct = 1;
-                        break;
-                    case R.id.correct3:
-                        correct = 2;
-                        break;
-                    case R.id.correct4:
-                        correct = 3;
-                        break;
-                }
-            }
-        });
-
         Button okButton = popUpView.findViewById(R.id.buttonDone);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,17 +86,19 @@ public class EditableQuizPopUp {
 
                 _quizData.setContent(content.getText().toString());
 
-                switch (correct) {
-                    case 0:
+                int selected = rg.getCheckedRadioButtonId();
+                rb = popUpView.findViewById(selected);
+                switch (rb.getText().toString()) {
+                    case "0":
                         _quizData.setCorrect(_quizData.getAns1());
                         break;
-                    case 1:
+                    case "1":
                         _quizData.setCorrect(_quizData.getAns2());
                         break;
-                    case 2:
+                    case "2":
                         _quizData.setCorrect(_quizData.getAns3());
                         break;
-                    case 3:
+                    case "3":
                         _quizData.setCorrect(_quizData.getAns4());
                         break;
                 }
