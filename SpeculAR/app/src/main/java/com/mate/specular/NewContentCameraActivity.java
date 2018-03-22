@@ -52,6 +52,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
     private static final String TAG = "NewContentCameraActiv";
     private CameraBridgeViewBase mOpenCvCameraView;
     private Button captureButton;
+    private boolean recognition = false;
     Context activityContext;
     private AlertDialog processWaitDialog;
     Mat image;
@@ -126,6 +127,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
                 processWaitDialog.show();
 
                 String colorDensity = preprocessFrame();
+                recognition = true;
                 //frameProcessor.stringOrderToColorArray(colorDensity);
                 processWaitDialog.dismiss();
 
@@ -190,7 +192,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         //Log.i(TAG, colorOrder+"");
 
         //TODO color order check islemi degisecek capture butonunun onClickinde set edilecek
-        if(colorOrder != null) {
+        if(colorOrder != null && recognition) {
             Log.i(TAG, "Color order detected successfully");
 
             MockDB.transferedImage = image.clone();
@@ -211,10 +213,12 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         Color[] colorArray = frameProcessor.stringOrderToColorArray(colorOrder);
         Circle[] temp = new Circle[4];
         for(int i = 0; i < 4; i++){
-            temp[i].setColor(colorArray[i]);
-            temp[i].setX_coord(circleCoordinates.get(colorOrder.substring(i)).getX_coord());
-            temp[i].setY_coord(circleCoordinates.get(colorOrder.substring(i)).getY_coord());
-            temp[i].setRadius(circleCoordinates.get(colorOrder.substring(i)).getRadius());
+            Color cl = colorArray[i];
+            int x = circleCoordinates.get(colorOrder.charAt(i)+"").getX_coord();
+            int y = circleCoordinates.get(colorOrder.charAt(i)+"").getY_coord();
+            int r = circleCoordinates.get(colorOrder.charAt(i)+"").getRadius();
+            Circle circ = new Circle(cl, x, y, r);
+            temp[i] = circ;
         }
         return temp;
     }
