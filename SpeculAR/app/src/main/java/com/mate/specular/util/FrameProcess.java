@@ -2,6 +2,8 @@ package com.mate.specular.util;
 
 import android.util.Log;
 import com.mate.specular.model.Circle;
+import com.mate.specular.model.Color;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -344,6 +346,24 @@ public class FrameProcess {
         yellow.add(100);
         yellow.add(100);
         colorHueCodes.put("Y", yellow);
+    }
+
+    public Color[] stringOrderToColorArray(String order){
+        if(order == null){
+            return null;
+        }
+        char[] colorOrder = order.toCharArray();
+        Color[] colorList = new Color[4];
+
+        for (int i = 0; i < 4; i++){
+            if(colorOrder[i] == 'R') colorList[i] = Color.RED;
+            else if(colorOrder[i] == 'B') colorList[i] = Color.BLUE;
+            else if(colorOrder[i] == 'Y') colorList[i] = Color.GOLD;
+            else if(colorOrder[i] == 'G') colorList[i] = Color.GREEN;
+            else if(colorOrder[i] == 'X') colorList[i] = null;
+            else colorList[i] = Color.BLACK;
+        }
+        return colorList;
     }
 
 }

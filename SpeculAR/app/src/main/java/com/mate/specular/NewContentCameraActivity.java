@@ -126,7 +126,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
                 processWaitDialog.show();
 
                 String colorDensity = preprocessFrame();
-
+                //frameProcessor.stringOrderToColorArray(colorDensity);
                 processWaitDialog.dismiss();
 
                 captureButton.setVisibility(View.INVISIBLE);
@@ -195,14 +195,28 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
 
             MockDB.transferedImage = image.clone();
 
-            // TODO
-            //object kismini null birak, circles kismini doldur
-            MockDB.transferedFrame = new Frame(null, null);
+            Circle[] circlelar = new Circle[4];
+
+            circlelar = circleCoordinatesToCircleArray(circleCoordinates, colorOrder);
+
+            MockDB.transferedFrame = new Frame(null, circlelar);
 
             Intent intent = new Intent(NewContentCameraActivity.this, CreateModelActivity.class);
             startActivity(intent);
         }
         return image;
+    }
+
+    private Circle[] circleCoordinatesToCircleArray(Map<String, Circle> circleCoordinates, String colorOrder){
+        Color[] colorArray = frameProcessor.stringOrderToColorArray(colorOrder);
+        Circle[] temp = new Circle[4];
+        for(int i = 0; i < 4; i++){
+            temp[i].setColor(colorArray[i]);
+            temp[i].setX_coord(circleCoordinates.get(colorOrder.substring(i)).getX_coord());
+            temp[i].setY_coord(circleCoordinates.get(colorOrder.substring(i)).getY_coord());
+            temp[i].setRadius(circleCoordinates.get(colorOrder.substring(i)).getRadius());
+        }
+        return temp;
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy) {

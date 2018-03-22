@@ -25,11 +25,10 @@ public class QuizPopUpWindow {
         this.parentView = parentView;
     }
 
-    public void show(String header, String content, String ans1, String ans2, String ans3, String ans4, String correct) {
+    public void show(String content, String ans1, String ans2, String ans3, String ans4, String correct) {
         LayoutInflater inflater = (LayoutInflater) parentContext.getSystemService(LAYOUT_INFLATER_SERVICE);
 
         View popUpView = inflater.inflate(R.layout.quiz_pop_up, null);
-        ((TextView) popUpView.findViewById(R.id.quizHeader)).setText(header);
         ((TextView) popUpView.findViewById(R.id.quizQuestion)).setText(content);
 
         final Button answer1 = popUpView.findViewById(R.id.answer1);
