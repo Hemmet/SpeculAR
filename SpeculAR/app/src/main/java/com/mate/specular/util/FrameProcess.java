@@ -1,8 +1,13 @@
 package com.mate.specular.util;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
+
+import com.mate.specular.database.MockDB;
 import com.mate.specular.model.Circle;
 import com.mate.specular.model.Color;
+import com.mate.specular.model.Frame;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -13,11 +18,13 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+import org.paukov.combinatorics3.Generator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by ETS on 1.03.2018.
@@ -366,4 +373,55 @@ public class FrameProcess {
         return colorList;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public List<Color> colorOrderSuggestion(Color[] notUsableByIndex){
+        List<Circle[]> notUsableByDatabase = new ArrayList<>();
+
+        for(Frame frame : MockDB.frames){
+           notUsableByDatabase.add(frame.getCircles());
+        }
+
+        //Right now there are only 4 colors on use so I'll hardcode this.
+        // Normally it'd have been able to get which colors are on use.
+        List<Color> possibleColorsToBeUsed = new ArrayList<>();
+        possibleColorsToBeUsed.add(Color.RED);
+        possibleColorsToBeUsed.add(Color.BLUE);
+        possibleColorsToBeUsed.add(Color.GREEN);
+        possibleColorsToBeUsed.add(Color.GOLD);
+
+        List<List<Color>> permutations = Generator
+                .permutation(possibleColorsToBeUsed)
+                .withRepetitions(4)
+                .stream()
+                .collect(Collectors.<List<Color>>toList());
+
+        //DeleteByIndex
+        List<List<Color>> willBeDeleted = new ArrayList<>();
+
+        for (int i = 0 ; i < permutations.size() ; i++){
+            for (int j = 0 ; j < 4 ; j++) {
+                if (permutations.get(i).get(j) == notUsableByIndex[j]) {
+                    willBeDeleted.add(permutations.get(i));
+                }
+            }
+        }
+        permutations.removeAll(willBeDeleted);
+        willBeDeleted.clear();
+
+        //DeleteByDatabase
+        for (Circle[] circle : notUsableByDatabase){
+            List<Color> colorList = new ArrayList<>();
+            colorList.add(circle[0].getColor());
+            colorList.add(circle[1].getColor());
+            colorList.add(circle[2].getColor());
+            colorList.add(circle[3].getColor());
+            willBeDeleted.add(colorList);
+        }
+
+        permutations.removeAll(willBeDeleted);
+
+        int random = (int)(Math.random() * permutations.size());
+
+        return permutations.get(random);
+    }
 }
