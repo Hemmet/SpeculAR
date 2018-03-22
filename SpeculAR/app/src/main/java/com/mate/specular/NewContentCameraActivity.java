@@ -137,8 +137,6 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
     }
 
     private String preprocessFrame() {
-        String densityOrder = frameProcessor.detectColorDensity(image, screenOrien);
-        Log.i(TAG, densityOrder + " XXX");
         return frameProcessor.detectColorDensity(image, screenOrien);
     }
 

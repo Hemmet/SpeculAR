@@ -345,4 +345,5 @@ public class FrameProcess {
         yellow.add(100);
         colorHueCodes.put("Y", yellow);
     }
+
 }
