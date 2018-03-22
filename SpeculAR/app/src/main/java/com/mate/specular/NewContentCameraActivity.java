@@ -9,13 +9,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
@@ -32,17 +32,11 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +47,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
     private CameraBridgeViewBase mOpenCvCameraView;
     private Button captureButton;
     private boolean recognition = false;
+    private String requiredColorOrder = "";
     Context activityContext;
     private AlertDialog processWaitDialog;
     Mat image;
@@ -111,6 +106,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
 
         captureButton = findViewById(R.id.captureFrameButton);
         captureButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
                 //Process pop up
@@ -127,15 +123,27 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
                 processWaitDialog.show();
 
                 String colorDensity = preprocessFrame();
-                recognition = true;
-                //frameProcessor.stringOrderToColorArray(colorDensity);
+                Color[] colorDensityArray = frameProcessor.stringOrderToColorArray(colorDensity);
+                List<Color> sColor = frameProcessor.colorOrderSuggestion(colorDensityArray);
+                colorListToString(sColor);
                 processWaitDialog.dismiss();
 
                 captureButton.setVisibility(View.INVISIBLE);
-                String colorOrder = "";//TODO ColorOrderUnique gelen alinacak
-                showColorOrderAlert(colorOrder);
+                showColorOrderAlert(requiredColorOrder);
+                recognition = true;
             }
         });
+    }
+
+    private void colorListToString(List<Color> sColor){
+        String order = "";
+        for (Color c : sColor){
+            if(c == Color.RED) order += "R";
+            else if(c == Color.BLUE) order += "B";
+            else if(c == Color.GOLD) order += "Y";
+            else if(c == Color.GREEN) order += "G";
+        }
+        requiredColorOrder = order;
     }
 
     private String preprocessFrame() {
@@ -191,8 +199,8 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         }
         //Log.i(TAG, colorOrder+"");
 
-        //TODO color order check islemi degisecek capture butonunun onClickinde set edilecek
-        if(colorOrder != null && recognition) {
+        if(recognition && colorOrder != null &&
+                colorOrder.equalsIgnoreCase(requiredColorOrder)) {
             Log.i(TAG, "Color order detected successfully");
 
             MockDB.transferedImage = image.clone();
@@ -259,6 +267,14 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
     }
 
     private void showColorOrderAlert(String colorOrder) {
+        String order = "";
+        char[] temp = colorOrder.toCharArray();
+        for(int i = 0; i< 4; i++){
+            if(temp[i] == 'R') order += " RED ";
+            else if(temp[i] == 'B') order += " BLUE ";
+            else if(temp[i] == 'Y') order += " YELLOW ";
+            else if(temp[i] == 'G') order += " GREEN ";
+        }
         AlertDialog.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
@@ -266,7 +282,7 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
             builder = new AlertDialog.Builder(this);
         }
         builder.setTitle("Color Order Set")
-                .setMessage("Please, set your color: " + colorOrder)
+                .setMessage("Please, set your color: " + order)
                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
