@@ -7,6 +7,8 @@ import com.mate.specular.model.InfoObjectModel;
 import com.mate.specular.model.ObjectModel;
 import com.mate.specular.model.QuizObjectModel;
 
+import org.opencv.core.Mat;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +18,9 @@ import java.util.Map;
 public class MockDB {
     public static Map<String, String> infoTags;
     public static List<Frame> frames;
+
+    public static Mat transferedImage;
+    public static Frame transferedFrame;
 
     public static void initializeMockDB() {
         initializeFrames();

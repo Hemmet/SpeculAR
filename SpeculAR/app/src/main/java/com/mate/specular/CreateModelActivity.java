@@ -2,6 +2,7 @@ package com.mate.specular;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -25,6 +26,8 @@ import com.mate.specular.model.QuizButton;
 import com.mate.specular.model.QuizObjectModel;
 import com.mate.specular.util.EditableQuizPopUp;
 import com.mate.specular.util.EditableInfoPopUp;
+
+import org.opencv.android.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +98,13 @@ public class CreateModelActivity extends Activity {
                     objects.add(newObject);
                 }
 
-                MockDB.insertFrame(new Frame(objects, new Circle[4]));
+                MockDB.transferedFrame.setObjects(objects);
+                MockDB.insertFrame(MockDB.transferedFrame);
+
+                Intent intent = new Intent(CreateModelActivity.this, PlaceListActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
         });
     }
@@ -200,8 +209,8 @@ public class CreateModelActivity extends Activity {
     }
 
     public void putImage() {
-        byte[] byteArray = getIntent().getByteArrayExtra("image");
-        Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+        Bitmap bitmap = Bitmap.createBitmap(MockDB.transferedImage.cols(),  MockDB.transferedImage.rows(),Bitmap.Config.ARGB_8888);;
+        Utils.matToBitmap(MockDB.transferedImage, bitmap);
         backgroundImageView.setImageBitmap(bitmap);
     }
 

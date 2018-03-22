@@ -22,7 +22,10 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 
+import com.mate.specular.database.MockDB;
 import com.mate.specular.model.Circle;
+import com.mate.specular.model.Color;
+import com.mate.specular.model.Frame;
 import com.mate.specular.util.FrameProcess;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -191,29 +194,17 @@ public class NewContentCameraActivity extends Activity implements CameraBridgeVi
         //TODO color order check islemi degisecek capture butonunun onClickinde set edilecek
         if(colorOrder != null) {
             Log.i(TAG, "Color order detected successfully");
-            Mat downSampledImage =  new Mat();
-            Imgproc.pyrDown(image, downSampledImage);
 
-            //Do the image serializable
-            byte[] byteArray = matToByteArray(downSampledImage);
+            MockDB.transferedImage = image.clone();
+
+            // TODO
+            //object kismini null birak, circles kismini doldur
+            MockDB.transferedFrame = new Frame(null, null);
 
             Intent intent = new Intent(NewContentCameraActivity.this, CreateModelActivity.class);
-            intent.putExtra("image", byteArray);
-            intent.putExtra("circleCoordinates", (Serializable) circleCoordinates);
-            intent.putExtra("colorOrder", colorOrder);
             startActivity(intent);
         }
         return image;
-    }
-
-    private byte[] matToByteArray(Mat mat) {
-        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-        Bitmap bitmap = Bitmap.createBitmap(mat.cols(),  mat.rows(),Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(mat, bitmap);
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
-        byte[] byteArray = bStream.toByteArray();
-
-        return byteArray;
     }
 
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
